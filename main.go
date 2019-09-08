@@ -261,7 +261,7 @@ var links []link
 var devices []device
 
 const configDir = "./config/"
-const testNet = "srlinux-mgmt"
+const testNet = "srlinux-mgmt-test"
 const testNetIPv4Subnet = "172.18.18.0/24"
 const testNetIPv6Subnet = "2001:172:18:18::/80"
 
