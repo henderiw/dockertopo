@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
+	"net"
 	"path"
 	"strconv"
 	"strings"
@@ -18,9 +20,28 @@ import (
 
 func createDockerBridge() {
 	// RETRIEVE EXISTING BRIDGE
-	br, err := tenus.BridgeFromName(testNet)
+	//br, err := tenus.BridgeFromName(testNet)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	// CREATE BRIDGE AND BRING IT UP
+	br, err := tenus.NewBridgeWithName(testNet)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	brIP, brIPNet, err := net.ParseCIDR(testNetIPv4Subnet)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := br.SetLinkIp(brIP, brIPNet); err != nil {
+		fmt.Println(err)
+	}
+
+	if err = br.SetLinkUp(); err != nil {
+		fmt.Println(err)
 	}
 	log.Info("Bridge:", br)
 }
@@ -275,9 +296,9 @@ var links []link
 var devices []device
 
 const configDir = "./config/"
-const testNet = "srlinux-mgmt-test"
-const testNetIPv4Subnet = "172.18.18.0/24"
-const testNetIPv6Subnet = "2001:172:18:18::/80"
+const testNet = "srlinux-mgmt2"
+const testNetIPv4Subnet = "172.19.19.0/24"
+const testNetIPv6Subnet = "2001:172:19:19::/80"
 
 func main() {
 	// Configure log formatting.
