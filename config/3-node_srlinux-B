@@ -1,0 +1,908 @@
+{
+  "_preamble": {
+    "header": {
+      "generated-by": "SRLINUX",
+      "name": "checkpoint-2019-05-09T22:20:04.835Z",
+      "comment": "srlinux",
+      "created": "2019-05-09T22:20:04.836Z",
+      "release": "v0.3.0",
+      "checksum": "bc7ddad6cdb561e0$f0d2d80063d476a8c859eb979517f9770ce3a4ff"
+    },
+    "build": {
+      "git-branch": "",
+      "git-tag": "v0.3.0-11-gab90803",
+      "git-sha": "ab908037a8bcc79eeeb55c5f2cf6d0776abd15d1"
+    },
+    "application": [
+      {
+        "name": "aaa_mgr_setup",
+        "path": "n/a",
+        "version": "n/a"
+      },
+      {
+        "name": "aaa_mgr",
+        "path": "/opt/srlinux/bin/sr_aaa_mgr",
+        "version": "2019-05-08T16:01:33.000Z"
+      },
+      {
+        "name": "acl_mgr",
+        "path": "/opt/srlinux/bin/sr_acl_mgr",
+        "version": "2019-05-08T16:04:08.000Z"
+      },
+      {
+        "name": "app_mgr",
+        "path": "/opt/srlinux/bin/sr_app_mgr",
+        "version": "2019-05-08T16:01:47.000Z"
+      },
+      {
+        "name": "arp_nd_mgr",
+        "path": "/opt/srlinux/bin/sr_arp_nd_mgr",
+        "version": "2019-05-08T16:04:23.000Z"
+      },
+      {
+        "name": "bfd_mgr",
+        "path": "/opt/srlinux/bin/sr_bfd_mgr",
+        "version": "2019-05-08T16:04:27.000Z"
+      },
+      {
+        "name": "bgp_mgr",
+        "path": "/opt/srlinux/bin/sr_bgp_mgr",
+        "version": "2019-05-08T16:06:29.000Z"
+      },
+      {
+        "name": "chassis_mgr",
+        "path": "/opt/srlinux/bin/sr_chassis_mgr",
+        "version": "2019-05-08T16:01:12.000Z"
+      },
+      {
+        "name": "dev_mgr",
+        "path": "/opt/srlinux/bin/sr_device_mgr",
+        "version": "2019-05-08T15:58:24.000Z"
+      },
+      {
+        "name": "fib_mgr",
+        "path": "/opt/srlinux/bin/sr_fib_mgr",
+        "version": "2019-05-08T16:04:30.000Z"
+      },
+      {
+        "name": "gnmi_server",
+        "path": "/opt/srlinux/bin/sr_gnmi_server",
+        "version": "2019-05-08T16:05:36.000Z"
+      },
+      {
+        "name": "idb_server",
+        "path": "/opt/srlinux/bin/sr_idb_server",
+        "version": "2019-05-08T15:58:07.000Z"
+      },
+      {
+        "name": "json_rpc",
+        "path": "/opt/srlinux/bin/sr_json_rpc",
+        "version": "2019-05-08T16:05:33.000Z"
+      },
+      {
+        "name": "linux_mgr",
+        "path": "/opt/srlinux/bin/sr_linux_mgr",
+        "version": "2019-05-08T16:05:35.000Z"
+      },
+      {
+        "name": "dnsmasq",
+        "path": "/usr/sbin/dnsmasq",
+        "version": "2018-10-30T17:05:20.000Z"
+      },
+      {
+        "name": "sshd",
+        "path": "/usr/sbin/sshd",
+        "version": "2018-04-11T04:21:32.000Z"
+      },
+      {
+        "name": "ntpd",
+        "path": "/usr/sbin/ntpd",
+        "version": "2018-04-13T12:52:34.000Z"
+      },
+      {
+        "name": "vsftpd",
+        "path": "/usr/sbin/vsftpd",
+        "version": "2018-10-30T19:45:09.000Z"
+      },
+      {
+        "name": "snmpd",
+        "path": "/usr/sbin/snmpd",
+        "version": "2018-10-30T23:53:02.000Z"
+      },
+      {
+        "name": "lldp_mgr",
+        "path": "/opt/srlinux/bin/sr_lldp_mgr",
+        "version": "2019-05-08T16:04:06.000Z"
+      },
+      {
+        "name": "log_mgr",
+        "path": "/opt/srlinux/bin/sr_log_mgr",
+        "version": "2019-05-08T16:01:44.000Z"
+      },
+      {
+        "name": "mgmt_server",
+        "path": "/opt/srlinux/bin/sr_mgmt_server",
+        "version": "2019-05-08T16:02:07.000Z"
+      },
+      {
+        "name": "common",
+        "path": "n/a",
+        "version": "n/a"
+      },
+      {
+        "name": "mpls_mgr",
+        "path": "/opt/srlinux/bin/sr_mpls_mgr",
+        "version": "2019-05-08T16:04:51.000Z"
+      },
+      {
+        "name": "net_inst_mgr",
+        "path": "/opt/srlinux/bin/sr_net_inst_mgr",
+        "version": "2019-05-08T16:01:32.000Z"
+      },
+      {
+        "name": "plcy_mgr",
+        "path": "/opt/srlinux/bin/sr_plcy_mgr",
+        "version": "2019-05-08T16:03:04.000Z"
+      },
+      {
+        "name": "maint_mode_mgr",
+        "path": "n/a",
+        "version": "n/a"
+      },
+      {
+        "name": "qos_mgr",
+        "path": "/opt/srlinux/bin/sr_qos_mgr",
+        "version": "2019-05-08T16:05:01.000Z"
+      },
+      {
+        "name": "sdk_mgr",
+        "path": "/opt/srlinux/bin/sr_sdk_mgr",
+        "version": "2019-05-08T16:06:26.000Z"
+      },
+      {
+        "name": "static_route_mgr",
+        "path": "/opt/srlinux/bin/sr_static_route_mgr",
+        "version": "2019-05-08T16:04:56.000Z"
+      },
+      {
+        "name": "xdp_cpm",
+        "path": "/opt/srlinux/bin/sr_xdp_cpm",
+        "version": "2019-05-08T16:01:45.000Z"
+      },
+      {
+        "name": "xdp_lc",
+        "path": "/opt/srlinux/bin/sr_xdp_lc",
+        "version": "2019-05-08T16:02:12.000Z"
+      }
+    ],
+    "yang-module": [
+      {
+        "name": "srl_nokia-aaa",
+        "revision": "2018-07-03"
+      },
+      {
+        "name": "srl_nokia-aaa-types",
+        "revision": "2018-07-03"
+      },
+      {
+        "name": "srl_nokia-acl",
+        "revision": "2018-09-01"
+      },
+      {
+        "name": "srl_nokia-aggregate-routes",
+        "revision": "2018-06-27"
+      },
+      {
+        "name": "srl_nokia-app-mgmt",
+        "revision": "2018-11-05"
+      },
+      {
+        "name": "srl_nokia-bfd",
+        "revision": "2018-05-23"
+      },
+      {
+        "name": "srl_nokia-bgp",
+        "revision": "2018-05-23"
+      },
+      {
+        "name": "srl_nokia-configuration",
+        "revision": "2019-01-21"
+      },
+      {
+        "name": "srl_nokia-debug",
+        "revision": "2018-08-19"
+      },
+      {
+        "name": "srl_nokia-dns",
+        "revision": "2018-09-12"
+      },
+      {
+        "name": "srl_nokia-ftp",
+        "revision": "2018-10-10"
+      },
+      {
+        "name": "srl_nokia-gnmi-server",
+        "revision": "2018-11-20"
+      },
+      {
+        "name": "srl_nokia-if-ip",
+        "revision": "2018-05-07"
+      },
+      {
+        "name": "srl_nokia-interfaces",
+        "revision": "2018-05-07"
+      },
+      {
+        "name": "srl_nokia-interfaces-nbr",
+        "revision": "2018-05-07"
+      },
+      {
+        "name": "srl_nokia-ip-route-tables",
+        "revision": "2018-12-04"
+      },
+      {
+        "name": "srl_nokia-json-rpc",
+        "revision": "2018-08-08"
+      },
+      {
+        "name": "srl_nokia-linux",
+        "revision": "2018-06-27"
+      },
+      {
+        "name": "srl_nokia-lldp",
+        "revision": "2018-07-28"
+      },
+      {
+        "name": "srl_nokia-lldp-types",
+        "revision": "2018-07-28"
+      },
+      {
+        "name": "srl_nokia-logging",
+        "revision": "2019-01-16"
+      },
+      {
+        "name": "srl_nokia-maintenance-mode",
+        "revision": "2018-10-10"
+      },
+      {
+        "name": "srl_nokia-mpls",
+        "revision": "2018-07-25"
+      },
+      {
+        "name": "srl_nokia-mpls-route-tables",
+        "revision": "2018-12-04"
+      },
+      {
+        "name": "srl_nokia-mtu",
+        "revision": "2019-01-21"
+      },
+      {
+        "name": "srl_nokia-network-instance",
+        "revision": "2018-05-23"
+      },
+      {
+        "name": "srl_nokia-network-instance-mtu",
+        "revision": "2019-03-27"
+      },
+      {
+        "name": "srl_nokia-next-hop-groups",
+        "revision": "2018-08-09"
+      },
+      {
+        "name": "srl_nokia-ntp",
+        "revision": "2018-09-17"
+      },
+      {
+        "name": "srl_nokia-packet-match-types",
+        "revision": "2018-09-01"
+      },
+      {
+        "name": "srl_nokia-platform",
+        "revision": "2019-03-09"
+      },
+      {
+        "name": "srl_nokia-qos",
+        "revision": "2018-11-15"
+      },
+      {
+        "name": "srl_nokia-rib-bgp",
+        "revision": "2018-06-27"
+      },
+      {
+        "name": "srl_nokia-routing-policy",
+        "revision": "2019-02-22"
+      },
+      {
+        "name": "srl_nokia-snmp",
+        "revision": "2018-11-06"
+      },
+      {
+        "name": "srl_nokia-ssh",
+        "revision": "2018-10-10"
+      },
+      {
+        "name": "srl_nokia-static-routes",
+        "revision": "2018-06-27"
+      },
+      {
+        "name": "srl_nokia-system",
+        "revision": "2018-08-09"
+      },
+      {
+        "name": "srl_nokia-system-resources",
+        "revision": "2019-02-27"
+      },
+      {
+        "name": "srl_nokia-telnet",
+        "revision": "2018-10-10"
+      },
+      {
+        "name": "srl_nokia-tftp",
+        "revision": "2018-10-10"
+      },
+      {
+        "name": "srl_nokia-tls",
+        "revision": "2019-01-16"
+      }
+    ]
+  },
+  "srl_nokia-interfaces:interface": [
+    {
+      "name": "ethernet-1/1",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "192.168.11.2/30"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001:1::192:168:11:2/126"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ethernet-1/3",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "192.168.13.1/30"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001:1::192:168:13:1/126"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "lo0",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "100.1.1.2/32"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001::100:1:1:2/128"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "mgmt0",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": 0,
+          "admin-state": "enable",
+          "ipv4": {
+            "dhcp-client": true
+          },
+          "ipv6": {
+            "dhcp-client": true
+          }
+        }
+      ]
+    }
+  ],
+  "srl_nokia-system:system": {
+    "srl_nokia-aaa:aaa": {
+      "authentication": {
+        "authentication-method": [
+          "local"
+        ]
+      },
+      "accounting": {
+        "event": [
+          {
+            "event-type": "srl_nokia-aaa-types:commands",
+            "record": "srl_nokia-aaa-types:start-stop"
+          }
+        ]
+      },
+      "server-group": [
+        {
+          "name": "local"
+        }
+      ]
+    },
+    "srl_nokia-gnmi-server:gnmi-server": {
+      "admin-state": "enable",
+      "timeout": 7200,
+      "rate-limit": 60,
+      "session-limit": 20,
+      "network-instance": [
+        {
+          "name": "mgmt",
+          "source-address": "0.0.0.0",
+          "port": 50052,
+          "tls-profile": "tls-profile-1"
+        }
+      ]
+    },
+    "srl_nokia-tls:tls": {
+      "server-profile": [
+        {
+          "name": "tls-profile-1",
+          "authenticate-client": false
+        }
+      ]
+    },
+    "srl_nokia-json-rpc:json-rpc-server": {
+      "admin-state": "enable",
+      "network-instance": [
+        {
+          "name": "mgmt",
+          "source-address": "0.0.0.0",
+          "protocol": {
+            "http": {
+              "admin-state": "enable",
+              "port": 4000,
+              "use-authentication": true,
+              "session-limit": 1
+            },
+            "https": {
+              "admin-state": "enable",
+              "port": 443,
+              "use-authentication": true,
+              "session-limit": 1
+            }
+          }
+        }
+      ]
+    },
+    "srl_nokia-ssh:ssh-server": {
+      "network-instance": [
+        {
+          "name": "mgmt",
+          "admin-state": "enable"
+        }
+      ]
+    },
+    "srl_nokia-lldp:lldp": {
+      "admin-state": "enable",
+      "hello-timer": 600,
+      "management-address": [
+        {
+          "subinterface": "mgmt0.0",
+          "type": [
+            "IPv4"
+          ]
+        }
+      ],
+      "interface": [
+        {
+          "name": "mgmt0",
+          "admin-state": "disable"
+        }
+      ]
+    },
+    "srl_nokia-logging:logging": {
+      "buffer": [
+        {
+          "buffer-name": "messages",
+          "rotate": 3,
+          "size": "10000000",
+          "facility": [
+            {
+              "facility-name": "local6",
+              "priority": {
+                "match-above": "info"
+              }
+            }
+          ]
+        },
+        {
+          "buffer-name": "system",
+          "facility": [
+            {
+              "facility-name": "auth",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "cron",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "daemon",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "ftp",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "kern",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "lpr",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "mail",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "news",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "syslog",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "user",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "uucp",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local0",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local1",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local2",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local3",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local4",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local5",
+              "priority": {
+                "match-above": "warning"
+              }
+            },
+            {
+              "facility-name": "local7",
+              "priority": {
+                "match-above": "warning"
+              }
+            }
+          ]
+        }
+      ],
+      "file": [
+        {
+          "file-name": "messages",
+          "rotate": 3,
+          "size": "10000000",
+          "facility": [
+            {
+              "facility-name": "local6",
+              "priority": {
+                "match-above": "warning"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "srl_nokia-network-instance:network-instance": [
+    {
+      "name": "default",
+      "type": "srl_nokia-network-instance:ip-vrf",
+      "admin-state": "enable",
+      "interface": [
+        {
+          "name": "ethernet-1/1.1"
+        },
+        {
+          "name": "ethernet-1/3.1"
+        },
+        {
+          "name": "lo0.1"
+        }
+      ],
+      "protocols": {
+        "srl_nokia-bgp:bgp": {
+          "autonomous-system": 65002,
+          "router-id": "2.2.2.2",
+          "ipv4-unicast": {
+            "admin-state": "enable",
+            "multipath": {
+              "allow-multiple-as": true
+            }
+          },
+          "ipv6-unicast": {
+            "admin-state": "enable",
+            "multipath": {
+              "allow-multiple-as": true
+            }
+          },
+          "ebgp-default-policy": {
+            "import-reject-all": false,
+            "export-reject-all": true
+          },
+          "group": [
+            {
+              "group-name": "test",
+              "admin-state": "enable",
+              "traceoptions": {
+                "flag": [
+                  {
+                    "name": "events"
+                  },
+                  {
+                    "name": "graceful-restart"
+                  },
+                  {
+                    "name": "keepalive"
+                  },
+                  {
+                    "name": "notification"
+                  },
+                  {
+                    "name": "open"
+                  },
+                  {
+                    "name": "packets"
+                  },
+                  {
+                    "name": "route"
+                  },
+                  {
+                    "name": "socket"
+                  },
+                  {
+                    "name": "timers"
+                  },
+                  {
+                    "name": "update"
+                  }
+                ]
+              }
+            }
+          ],
+          "neighbor": [
+            {
+              "peer-address": "192.168.11.1",
+              "peer-group": "test",
+              "description": "default network-instance bgp neighbor to Node A",
+              "peer-as": 65001,
+              "export-policy": "bgp-export-policy",
+              "local-as": [
+                {
+                  "as-number": 65002
+                }
+              ],
+              "failure-detection": {
+                "enable-bfd": true,
+                "fast-failover": true
+              }
+            },
+            {
+              "peer-address": "192.168.13.2",
+              "peer-group": "test",
+              "description": "default network-instance bgp neighbor to Node C",
+              "peer-as": 65003,
+              "export-policy": "bgp-export-policy",
+              "local-as": [
+                {
+                  "as-number": 65002
+                }
+              ],
+              "failure-detection": {
+                "enable-bfd": true,
+                "fast-failover": true
+              }
+            },
+            {
+              "peer-address": "2001:1::192:168:11:1",
+              "peer-group": "test",
+              "description": "default network-instance bgp neighbor to Node A",
+              "peer-as": 65001,
+              "export-policy": "bgp-export-policy-v6",
+              "local-as": [
+                {
+                  "as-number": 65002
+                }
+              ],
+              "failure-detection": {
+                "enable-bfd": true,
+                "fast-failover": true
+              }
+            },
+            {
+              "peer-address": "2001:1::192:168:13:2",
+              "peer-group": "test",
+              "description": "default network-instance bgp neighbor to Node C",
+              "peer-as": 65003,
+              "export-policy": "bgp-export-policy-v6",
+              "local-as": [
+                {
+                  "as-number": 65002
+                }
+              ],
+              "failure-detection": {
+                "enable-bfd": true,
+                "fast-failover": true
+              }
+            }
+          ]
+        },
+        "srl_nokia-linux:linux": {
+          "export-routes": true,
+          "export-neighbors": true
+        }
+      },
+      "srl_nokia-static-routes:static-routes": {
+        "route": [
+          {
+            "prefix": "192.168.17.0/24",
+            "admin-state": "enable",
+            "metric": 1,
+            "preference": 5,
+            "next-hop-group": "static-ipv4-grp"
+          },
+          {
+            "prefix": "2001:1::192:168:17:0/64",
+            "admin-state": "enable",
+            "metric": 1,
+            "preference": 6,
+            "next-hop-group": "static-ipv6-grp"
+          }
+        ]
+      },
+      "srl_nokia-next-hop-groups:next-hop-groups": {
+        "ecmp": {
+          "max-paths-level-2": 1
+        },
+        "group": [
+          {
+            "name": "static-ipv4-grp",
+            "admin-state": "enable",
+            "blackhole": {
+            }
+          },
+          {
+            "name": "static-ipv6-grp",
+            "admin-state": "enable",
+            "blackhole": {
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "mgmt",
+      "type": "srl_nokia-network-instance:ip-vrf",
+      "admin-state": "enable",
+      "description": "Management network instance",
+      "interface": [
+        {
+          "name": "mgmt0.0"
+        }
+      ],
+      "protocols": {
+        "srl_nokia-linux:linux": {
+          "export-routes": true,
+          "export-neighbors": true
+        }
+      }
+    }
+  ],
+  "srl_nokia-routing-policy:routing-policy": {
+    "policy": [
+      {
+        "name": "bgp-export-policy",
+        "statement": [
+          {
+            "sequence-id": 999,
+            "action": {
+              "accept": {
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "bgp-export-policy-v6",
+        "statement": [
+          {
+            "sequence-id": 999,
+            "action": {
+              "accept": {
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
