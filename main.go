@@ -18,6 +18,10 @@ func createDockerBridge() {
 	la := netlink.NewLinkAttrs()
 	la.Name = testNet
 	mybridge := &netlink.Bridge{LinkAttrs: la}
+	err := netlink.LinkAdd(mybridge)
+	if err != nil {
+		log.Info("could not add %s: %v\n", la.Name, err)
+	}
 	log.Info("Bridge:", mybridge)
 
 }
