@@ -307,7 +307,7 @@ var devices []device
 const configDir = "./config/"
 const testNet = "srlinux-mgmt2"
 const testNetIPv4Subnet = "172.19.19.0/24"
-const testNetIPv6Subnet = "2001:172:19:19::/80"
+const testNetIPv6Subnet = "2001:172:19:19::1/80"
 
 func main() {
 	// Configure log formatting.
