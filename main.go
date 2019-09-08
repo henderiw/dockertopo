@@ -8,9 +8,19 @@ import (
 	"strings"
 
 	"github.com/henderiw/kubemon2/lib/logutils"
+	"github.com/vishvananda/netlink"
+
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
+
+func createDockerBridge() {
+	la := netlink.NewLinkAttrs()
+	la.Name = testNet
+	mybridge := &netlink.Bridge{LinkAttrs: la}
+	log.Info("Bridge:", mybridge)
+
+}
 
 type topologyConfig struct {
 	Version  string `yaml:"version"`
@@ -102,18 +112,9 @@ func (d *device) getConfig(t string, config topologyConfig) {
 
 func (d *device) connect(intName string, l link) {
 	log.Info("Creating a pointer to network '%s' for interface '%s'", l.Name, intName)
-	log.Info("DEVICE :", d)
-	i := make(map[string]link)
-	i[intName] = l
-	for key, value := range d.Interfaces {
-		log.Info("KEY", key)
-		log.Info("VALUE", value)
-		i[key] = value
-	}
-	log.Info("I: ", i)
 	//d.Interfaces = make(map[string]link)
-	d.Interfaces = i
-	log.Info("Interfaces:", d.Interfaces)
+	d.Interfaces[intName] = l
+	//log.Info("Interfaces:", d.Interfaces)
 
 	d.updateStartMode(intName, l)
 }
@@ -180,13 +181,14 @@ func (v *veth) init(name string) (network string) {
 
 func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 	for _, endpoint := range endpoints {
+		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
 		ep := strings.Split(endpoint, ":")
-		log.Info("EP:  ", ep)
+		//log.Info("EP:  ", ep)
 		deviceName := ep[0]
-		log.Info("DEVICE NAME:  ", deviceName)
+		//log.Info("DEVICE NAME:  ", deviceName)
 		intName := ep[1]
-		log.Info("INTERFACE NAME:  ", intName)
+		//log.Info("INTERFACE NAME:  ", intName)
 
 		found := false
 		//log.Info("parseEndpoints Devices before for loop with found :", devices)
@@ -199,7 +201,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 				break
 			}
 		}
-		log.Info("FOUND:", found)
+		//log.Info("FOUND:", found)
 		if found == false {
 			device.init(deviceName, t, config)
 			//log.Info("parseEndpoints Device init:", device)
@@ -212,7 +214,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 			devices = append(devices, device)
 		}
 
-		log.Info("parseEndpoints Devices :", devices)
+		//log.Info("parseEndpoints Devices :", devices)
 	}
 }
 
@@ -231,15 +233,15 @@ func parseTopology(t string, config topologyConfig) {
 		} else {
 			linkType = "mpoint"
 		}
-		log.Info("Parsing Endpoint 0:", endpoint.EndPoints[0])
-		log.Info("Parsing Endpoint 1:", endpoint.EndPoints[1])
-		log.Info("Linkdriver:", linkDriver)
-		log.Info("linkType:", linkType)
+		//log.Info("Parsing Endpoint 0:", endpoint.EndPoints[0])
+		//log.Info("Parsing Endpoint 1:", endpoint.EndPoints[1])
+		//log.Info("Linkdriver:", linkDriver)
+		//log.Info("linkType:", linkType)
 
 		var link link
 		link.init(linkType, "net-"+strconv.Itoa(idx), linkDriver, config)
 		links = append(links, link)
-		log.Info("Links", links)
+		//log.Info("Links", links)
 		parseEndpoints(endpoint.EndPoints, link, config)
 
 	}
@@ -309,6 +311,8 @@ func main() {
 		log.Info("Link:", i, link)
 		log.Info("/n########## Link ############/n")
 	}
+
+	createDockerBridge()
 
 	/*
 		ctx := context.Background()
