@@ -10,11 +10,22 @@ import (
 	"github.com/henderiw/kubemon2/lib/logutils"
 	"github.com/vishvananda/netlink"
 
+	"github.com/milosgajdos83/tenus"
+
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
 func createDockerBridge() {
+	// RETRIEVE EXISTING BRIDGE
+	br, err := tenus.BridgeFromName(testNet)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Info("Bridge:", br)
+}
+
+func createDockerBridge2() {
 	la := netlink.NewLinkAttrs()
 	la.Name = testNet
 	mybridge := &netlink.Bridge{LinkAttrs: la}
@@ -23,7 +34,6 @@ func createDockerBridge() {
 		log.Info("could not add %s: %v\n", la.Name, err)
 	}
 	log.Info("Bridge:", mybridge)
-
 }
 
 type topologyConfig struct {
