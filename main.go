@@ -40,6 +40,15 @@ func createDockerBridge() {
 		fmt.Println(err)
 	}
 
+	brIP, brIPNet, err = net.ParseCIDR(testNetIPv6Subnet)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := br.SetLinkIp(brIP, brIPNet); err != nil {
+		fmt.Println(err)
+	}
+
 	if err = br.SetLinkUp(); err != nil {
 		fmt.Println(err)
 	}
