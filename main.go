@@ -24,7 +24,7 @@ func createDockerBridge() {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 	fmt.Printf("combined out:\n%s\n", string(out))
-	fmt.Println(strings.Contains(string(out), "srlinux-mgmt"))
+	fmt.Println(strings.Contains(string(out), "srlinux-mgmt2"))
 }
 
 /*
