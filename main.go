@@ -412,27 +412,7 @@ func main() {
 	}
 
 	for _, device := range devices {
-		device.start()
+		device.create()
 	}
 
-	/*
-		ctx := context.Background()
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-		if err != nil {
-			panic(err)
-		}
-
-		containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
-		if err != nil {
-			panic(err)
-		}
-
-		for _, container := range containers {
-			fmt.Println(container.ID)
-			fmt.Println(container.Names)
-			fmt.Println(container.Image)
-			fmt.Println(container.ImageID)
-			fmt.Println("@@@@@@@@@@@@")
-		}
-	*/
 }
