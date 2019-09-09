@@ -1,17 +1,22 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 	"os/exec"
 	"path"
 	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/henderiw/kubemon2/lib/logutils"
-	"github.com/vishvananda/netlink"
 
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
@@ -34,56 +39,6 @@ func createDockerBridge() {
 		}
 		log.Info("combined out:\n%s\n", string(out))
 	}
-}
-
-/*
-func createLinuxBridge() {
-	// RETRIEVE EXISTING BRIDGE
-	//br, err := tenus.BridgeFromName(testNet)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	// CREATE BRIDGE AND BRING IT UP
-	br, err := tenus.NewBridgeWithName(testNet)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	brIP, brIPNet, err := net.ParseCIDR(testNetIPv4Subnet)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := br.SetLinkIp(brIP, brIPNet); err != nil {
-		fmt.Println(err)
-	}
-
-	brIP, brIPNet, err = net.ParseCIDR(testNetIPv6Subnet)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := br.SetLinkIp(brIP, brIPNet); err != nil {
-		fmt.Println(err)
-	}
-
-	if err = br.SetLinkUp(); err != nil {
-		fmt.Println(err)
-	}
-	log.Info("Bridge:", br)
-}
-*/
-
-func createDockerBridge2() {
-	la := netlink.NewLinkAttrs()
-	la.Name = testDockerNet
-	mybridge := &netlink.Bridge{LinkAttrs: la}
-	err := netlink.LinkAdd(mybridge)
-	if err != nil {
-		log.Info("could not add %s: %v\n", la.Name, err)
-	}
-	log.Info("Bridge:", mybridge)
 }
 
 type topologyConfig struct {
@@ -157,7 +112,13 @@ func (d *device) init(name, t string, config topologyConfig) {
    						}`
 	d.Command = "sudo /opt/srlinux/bin/sr_linux"
 	d.DefaultNetwork = "srlinux-mgmt"
+	// Setting up extra variables
 	d.Interfaces = make(map[string]link)
+	// Pointer to docker SDK object
+	d.Container = ""
+	d.User = ""
+	d.Detach = true
+
 }
 
 func (d *device) getConfig(t string, config topologyConfig) {
@@ -176,7 +137,6 @@ func (d *device) getConfig(t string, config topologyConfig) {
 
 func (d *device) connect(intName string, l link) {
 	log.Info("Creating a pointer to network '%s' for interface '%s'", l.Name, intName)
-	//d.Interfaces = make(map[string]link)
 	d.Interfaces[intName] = l
 	//log.Info("Interfaces:", d.Interfaces)
 
@@ -192,6 +152,75 @@ func (d *device) updateStartMode(intName string, link link) {
 	}
 	log.Info("Updating start_mode from '%s' to '%s'", d.StartMode, newStartMode)
 	d.StartMode = newStartMode
+
+}
+
+func (d *device) getOrCreate() {
+
+}
+
+func (d *device) update() {
+
+}
+
+func (d *device) create() {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	reader, err := cli.ImagePull(ctx, "docker.io/library/alpine", types.ImagePullOptions{})
+	if err != nil {
+		log.Error(err)
+	}
+	io.Copy(os.Stdout, reader)
+
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "alpine",
+		Cmd:   []string{"echo", "hello world"},
+		Tty:   true,
+	}, nil, nil, "")
+	if err != nil {
+		log.Error(err)
+	}
+
+	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+		log.Error(err)
+	}
+
+	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		if err != nil {
+			log.Error(err)
+		}
+	case <-statusCh:
+	}
+
+	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+	if err != nil {
+		log.Error(err)
+	}
+
+	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+}
+
+func (d *device) get() {
+
+}
+
+func (d *device) start() {
+	if d.Container == "" {
+		d.getOrCreate()
+	}
+}
+
+func (d *device) attach() {
+
+}
+
+func (d *device) kill() {
 
 }
 
@@ -377,9 +406,13 @@ func main() {
 	}
 
 	if runtime.GOOS == "windows" {
-		fmt.Println("Can't Execute this on a windows machine")
+		log.Error("Can't Execute this on a windows machine")
 	} else {
 		createDockerBridge()
+	}
+
+	for _, device := range devices {
+		device.start()
 	}
 
 	/*
