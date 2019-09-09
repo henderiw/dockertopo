@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"os/exec"
 	"path"
 	"runtime"
@@ -14,14 +13,12 @@ import (
 	"github.com/henderiw/kubemon2/lib/logutils"
 	"github.com/vishvananda/netlink"
 
-	"github.com/milosgajdos83/tenus"
-
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
 func createDockerBridge() {
-	out, err := exec.Command("docker network ls | grep srlinux-mgmt2").Output()
+	out, err := exec.Command("docker network ls | grep srlinux-mgmt").Output()
 	if err != nil {
 		log.Error("%s", err)
 	}
@@ -31,6 +28,7 @@ func createDockerBridge() {
 	log.Info("Output:", output)
 }
 
+/*
 func createLinuxBridge() {
 	// RETRIEVE EXISTING BRIDGE
 	//br, err := tenus.BridgeFromName(testNet)
@@ -67,6 +65,7 @@ func createLinuxBridge() {
 	}
 	log.Info("Bridge:", br)
 }
+*/
 
 func createDockerBridge2() {
 	la := netlink.NewLinkAttrs()
