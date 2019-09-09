@@ -18,12 +18,12 @@ import (
 )
 
 func createDockerBridge() {
-	out, err := exec.Command("/usr/bin/echo $PATH").Output()
+	out, err := exec.Command("/usr/bin/echo", "$PATH").Output()
 	if err != nil {
 		log.Error("%s", err)
 	}
 
-	out, err = exec.Command("/usr/bin/docker network ls | grep srlinux-mgmt").Output()
+	out, err = exec.Command("/usr/bin/docker", "network ls | grep srlinux-mgmt").Output()
 	if err != nil {
 		log.Error("%s", err)
 	}
