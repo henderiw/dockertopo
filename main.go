@@ -23,8 +23,17 @@ func createDockerBridge() {
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	fmt.Printf("combined out:\n%s\n", string(out))
-	fmt.Println(strings.Contains(string(out), "srlinux-mgmt2"))
+	log.Info("combined out:\n%s\n", string(out))
+	if strings.Contains(string(out), "srlinux-mgmt2") == false {
+		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
+
+		cmd := exec.Command("docker", "network", "create", "-d", "bridge", "--subnet", testDockerNetIPv4Subnet, "--ipv6", "--subnet", testDockerNetIPv6Subnet, testDockerNet)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out:\n%s\n", string(out))
+	}
 }
 
 /*
@@ -68,7 +77,7 @@ func createLinuxBridge() {
 
 func createDockerBridge2() {
 	la := netlink.NewLinkAttrs()
-	la.Name = testNet
+	la.Name = testDockerNet
 	mybridge := &netlink.Bridge{LinkAttrs: la}
 	err := netlink.LinkAdd(mybridge)
 	if err != nil {
@@ -316,9 +325,9 @@ var links []link
 var devices []device
 
 const configDir = "./config/"
-const testNet = "srlinux-mgmt2"
-const testNetIPv4Subnet = "172.19.19.0/24"
-const testNetIPv6Subnet = "2001:172:19:19::1/80"
+const testDockerNet = "srlinux-mgmt2"
+const testDockerNetIPv4Subnet = "172.19.19.0/24"
+const testDockerNetIPv6Subnet = "2001:172:19:19::1/80"
 
 func main() {
 	// Configure log formatting.
