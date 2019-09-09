@@ -27,7 +27,7 @@ func createDockerBridge() {
 	if strings.Contains(string(out), "srlinux-mgmt2") == false {
 		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
 
-		cmd := exec.Command("docker", "network", "create", "-d", "bridge", "--subnet", testDockerNetIPv4Subnet, "--ipv6", "--subnet", testDockerNetIPv6Subnet, testDockerNet, "--opt", "\"com.docker.network.bridge.name\"", testDockerNet)
+		cmd := exec.Command("docker", "network", "create", "-d", "bridge", "--subnet", testDockerNetIPv4Subnet, "--ipv6", "--subnet", testDockerNetIPv6Subnet, "--opt", "com.docker.network.bridge.name="+testDockerNet, testDockerNet)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
