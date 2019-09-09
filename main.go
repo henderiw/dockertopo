@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"os/exec"
 	"path"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -19,6 +21,17 @@ import (
 )
 
 func createDockerBridge() {
+	out, err := exec.Command("docker network ls | grep srlinux-mgmt2").Output()
+	if err != nil {
+		log.Error("%s", err)
+	}
+
+	log.Info("Command Successfully Executed")
+	output := string(out[:])
+	log.Info("Output:", output)
+}
+
+func createLinuxBridge() {
 	// RETRIEVE EXISTING BRIDGE
 	//br, err := tenus.BridgeFromName(testNet)
 	//if err != nil {
@@ -356,7 +369,11 @@ func main() {
 		log.Info("/n########## Link ############/n")
 	}
 
-	createDockerBridge()
+	if runtime.GOOS == "windows" {
+		fmt.Println("Can't Execute this on a windows machine")
+	} else {
+		createDockerBridge()
+	}
 
 	/*
 		ctx := context.Background()
