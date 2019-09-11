@@ -129,8 +129,8 @@ func (d *device) init(name, t string, config topologyConfig) {
 func (d *device) getConfig(t string, config topologyConfig) {
 	log.Info("Device Get Configuration")
 	license := path.Join(path.Dir(t), configDir+"license.txt")
-	startup := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
-	topologyYAML := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
+	startup := path.Join(path.Dir(t), configDir+config.Prefix+"_"+d.Name)
+	topologyYAML := path.Join(path.Dir(t), configDir+config.Prefix+"_"+d.Name)
 	envConf := path.Join(path.Dir(t), configDir+"srlinux.conf")
 
 	license, err := filepath.Abs(license)
