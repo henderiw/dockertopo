@@ -131,7 +131,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	log.Info("Device Get Configuration")
 	license := path.Join(path.Dir(t), configDir+"license.txt")
 	startup := path.Join(path.Dir(t), configDir+d.Name)
-	topologyYAML := path.Join(path.Dir(t), configDir+d.Name)
+	topologyYAML := path.Join(path.Dir(t), configDir+d.Name+"_card_info.yml")
 	envConf := path.Join(path.Dir(t), configDir+"srlinux.conf")
 	checkPoint := path.Join(path.Dir(t), configDir+configJSONDir+d.Name)
 
