@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/henderiw/kubemon2/lib/logutils"
@@ -61,32 +61,29 @@ func (c *topologyConfig) Parse(data []byte) error {
 	return nil
 }
 
+type volume struct {
+	source      string
+	destination string
+	readOnly    bool
+}
+
 type device struct {
-	Name        string
-	Type        string
-	Image       string
-	Version     string
-	Command     string
-	Environment struct {
-	}
+	Name           string
+	Type           string
+	Image          string
+	Version        string
+	Command        string
+	Environment    []string
 	Pid            string
 	Sandbox        string
 	DefaultNetwork string
 	StartMode      string
-	Sysctls        string //  {'net.ipv4.ip_forward': 1}
-	EntryCmd       string //'docker exec -it {} sh'.format(self.name)
+	Sysctls        map[string]string //  {'net.ipv4.ip_forward': 1}
+	EntryCmd       string            //'docker exec -it {} sh'.format(self.name)
 	Interfaces     map[string]link
-	Volumes        struct {
-		License         string
-		LicenseCmd      string
-		Startup         string
-		StartupCmd      string
-		TopologyYAML    string
-		TopologyYAMLCmd string
-		EnvConf         string
-		EnvConfCmd      string
-	}
-	Ports struct {
+	Volumes        map[string]volume
+	Labels         map[string]string
+	Ports          struct {
 	}
 	Container string
 	User      string
@@ -103,35 +100,59 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.Version = v[1]
 	d.User = "root"
 	d.Detach = false
-	d.Sysctls = `{'net.ipv4.ip_forward': 0,
-						'net.ipv6.conf.all.disable_ipv6':0,
-						'net.ipv6.conf.all.accept_dad':0,
-						'net.ipv6.conf.default.accept_dad':0,
-						'net.ipv6.conf.all.autoconf':0,
-						'net.ipv6.conf.default.autoconf':0,
-   						}`
+	d.Sysctls = make(map[string]string)
+	d.Sysctls["net.ipv4.ip_forward"] = "0"
+	d.Sysctls["net.ipv6.conf.all.disable_ipv6"] = "0"
+	d.Sysctls["net.ipv6.conf.all.accept_dad"] = "0"
+	d.Sysctls["net.ipv6.conf.default.accept_dad"] = "0"
+	d.Sysctls["net.ipv6.conf.all.autoconf"] = "0"
+	d.Sysctls["net.ipv6.conf.default.autoconf"] = "0"
 	d.Command = "sudo /opt/srlinux/bin/sr_linux"
-	d.DefaultNetwork = "srlinux-mgmt"
+	d.DefaultNetwork = testDockerNet
+	d.Environment = []string{"SRLINUX=1"}
+	d.EntryCmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no admin@$(docker inspect {} --format '.format(self.name) + '\"{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\")"
 	// Setting up extra variables
 	d.Interfaces = make(map[string]link)
+	d.Volumes = make(map[string]volume)
+	d.Labels = make(map[string]string)
+	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
 	d.Container = ""
 	d.User = ""
 	d.Detach = true
 
+	d.getConfig(t, config)
+
 }
 
 func (d *device) getConfig(t string, config topologyConfig) {
 	log.Info("Device Get Configuration")
-	d.Volumes.License = path.Join(path.Dir(t), configDir+"license.txt")
-	d.Volumes.Startup = path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
-	d.Volumes.TopologyYAML = path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
-	d.Volumes.EnvConf = path.Join(path.Dir(t), configDir+"srlinux.conf")
+	license := path.Join(path.Dir(t), configDir+"license.txt")
+	startup := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
+	topologyYAML := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
+	envConf := path.Join(path.Dir(t), configDir+"srlinux.conf")
+	log.Info(path.IsAbs(license))
+	log.Info(path.IsAbs(startup))
+	log.Info(path.IsAbs(topologyYAML))
+	log.Info(path.IsAbs(envConf))
 
-	d.Volumes.LicenseCmd = `{'bind': '/opt/srlinux/etc/license.key', 'mode': 'ro'}`
-	d.Volumes.StartupCmd = `{'bind': '/etc/opt/srlinux/config.json', 'mode': 'rw'}`
-	d.Volumes.TopologyYAMLCmd = `{'bind': '/tmp/topology.yml', 'mode': 'ro'}`
-	d.Volumes.EnvConfCmd = `{'bind': '/home/admin/.srlinux.conf', 'mode': 'rw'}`
+	var v volume
+	v.source = license
+	v.destination = "/opt/srlinux/etc/license.key"
+	v.readOnly = true
+	d.Volumes["license"] = v
+	v.source = startup
+	v.destination = "/etc/opt/srlinux/config.json"
+	v.readOnly = false
+	d.Volumes["startup"] = v
+	v.source = topologyYAML
+	v.destination = "/tmp/topology.yml"
+	v.readOnly = true
+	d.Volumes["topologyYAML"] = v
+	v.source = envConf
+	v.destination = "/home/admin/.srlinux.conf"
+	v.readOnly = false
+	d.Volumes["envConf"] = v
 
 }
 
@@ -169,18 +190,53 @@ func (d *device) create() {
 	if err != nil {
 		log.Error(err)
 	}
-
-	reader, err := cli.ImagePull(ctx, "docker.io/library/alpine", types.ImagePullOptions{})
-	if err != nil {
-		log.Error(err)
-	}
-	io.Copy(os.Stdout, reader)
+	/*
+		reader, err := cli.ImagePull(ctx, "docker.io/library/alpine", types.ImagePullOptions{})
+		if err != nil {
+			log.Error(err)
+		}
+		io.Copy(os.Stdout, reader)
+	*/
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "alpine",
-		Cmd:   []string{"echo", "hello world"},
-		Tty:   true,
-	}, nil, nil, "")
+		Image:    d.Image,
+		Cmd:      strings.Fields(d.Container),
+		Env:      d.Environment,
+		Hostname: d.Name,
+		Tty:      true,
+		User:     d.User,
+		Labels:   d.Labels,
+	}, &container.HostConfig{
+
+		Sysctls:    d.Sysctls,
+		Privileged: true,
+		Mounts: []mount.Mount{
+			{
+				Type:     mount.TypeBind,
+				Source:   d.Volumes["license"].source,
+				Target:   d.Volumes["license"].destination,
+				ReadOnly: d.Volumes["license"].readOnly,
+			},
+			{
+				Type:     mount.TypeBind,
+				Source:   d.Volumes["startup"].source,
+				Target:   d.Volumes["startup"].destination,
+				ReadOnly: d.Volumes["startup"].readOnly,
+			},
+			{
+				Type:     mount.TypeBind,
+				Source:   d.Volumes["topologyYAML"].source,
+				Target:   d.Volumes["topologyYAML"].destination,
+				ReadOnly: d.Volumes["topologyYAML"].readOnly,
+			},
+			{
+				Type:     mount.TypeBind,
+				Source:   d.Volumes["envConf"].source,
+				Target:   d.Volumes["envConf"].destination,
+				ReadOnly: d.Volumes["envConf"].readOnly,
+			},
+		},
+	}, nil, "")
 	if err != nil {
 		log.Error(err)
 	}
@@ -377,18 +433,6 @@ func main() {
 	if err := config.Parse(data); err != nil {
 		log.Fatal(err)
 	}
-	log.Info("%#v", config)
-	log.Info("Version:", config.Version)
-	log.Info("Driver:", config.Driver)
-	log.Info("Prefix:", config.Prefix)
-	log.Info("NodeType:", config.NodeType)
-	log.Info("Image:", config.Image)
-	log.Info("Base:", config.Base)
-	log.Info("Links:", config.Links)
-
-	//srlinux.init(t, config)
-	//srlinux.getConfig(t, config)
-	//log.Info("SRLINUX:", srlinux)
 
 	parseTopology(t, config)
 
