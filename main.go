@@ -84,6 +84,7 @@ type device struct {
 	Interfaces     map[string]link
 	Mounts         map[string]volume
 	Volumes        map[string]struct{}
+	Binds          []string
 	Labels         map[string]string
 	Ports          struct {
 	}
@@ -132,6 +133,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	startup := path.Join(path.Dir(t), configDir+d.Name)
 	topologyYAML := path.Join(path.Dir(t), configDir+d.Name)
 	envConf := path.Join(path.Dir(t), configDir+"srlinux.conf")
+	checkPoint := path.Join(path.Dir(t), configDir+configJSONDir+d.Name)
 
 	license, err := filepath.Abs(license)
 	if err == nil {
@@ -149,10 +151,15 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	if err == nil {
 		log.Info("Absolute envConf path:", envConf)
 	}
+	checkPoint, err = filepath.Abs(checkPoint)
+	if err == nil {
+		log.Info("Absolute checkPoint path:", checkPoint)
+	}
 	log.Info(path.IsAbs(license))
 	log.Info(path.IsAbs(startup))
 	log.Info(path.IsAbs(topologyYAML))
 	log.Info(path.IsAbs(envConf))
+	log.Info(path.IsAbs(checkPoint))
 
 	var v volume
 	v.source = license
@@ -171,13 +178,26 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	v.destination = "/home/admin/.srlinux.conf"
 	v.readOnly = false
 	d.Mounts["envConf"] = v
+	v.source = checkPoint
+	v.destination = "/etc/opt/srlinux/checkpoint/"
+	v.readOnly = false
+	d.Mounts["checkPoint"] = v
 
 	d.Volumes = map[string]struct{}{
 		d.Mounts["license"].destination:      struct{}{},
 		d.Mounts["startup"].destination:      struct{}{},
 		d.Mounts["topologyYAML"].destination: struct{}{},
 		d.Mounts["envConf"].destination:      struct{}{},
+		d.Mounts["checkPoint"].destination:   struct{}{},
 	}
+
+	bindLicense := d.Mounts["license"].source + ":" + d.Mounts["license"].destination + ":" + "ro"
+	bindStartup := d.Mounts["startup"].source + ":" + d.Mounts["startup"].destination + ":" + "rw"
+	bindTopologyYAML := d.Mounts["topologyYAML"].source + ":" + d.Mounts["topologyYAML"].destination + ":" + "ro"
+	bindEnvConf := d.Mounts["envConf"].source + ":" + d.Mounts["envConf"].destination + ":" + "rw"
+	bindCheckPoint := d.Mounts["checkPoint"].source + ":" + d.Mounts["checkPoint"].destination + ":" + "rw"
+
+	d.Binds = []string{bindLicense, bindStartup, bindTopologyYAML, bindEnvConf, bindCheckPoint}
 
 }
 
@@ -235,9 +255,10 @@ func (d *device) create() {
 		User:         d.User,
 		Labels:       d.Labels,
 	}, &container.HostConfig{
-
-		Sysctls:    d.Sysctls,
-		Privileged: true,
+		Binds:       d.Binds,
+		Sysctls:     d.Sysctls,
+		Privileged:  true,
+		NetworkMode: container.NetworkMode(d.DefaultNetwork),
 		Mounts: []mount.Mount{
 			{
 				Type:     mount.TypeBind,
@@ -438,6 +459,7 @@ var links []link
 var devices []device
 
 const configDir = "./config/"
+const configJSONDir = "json_config/"
 const testDockerNet = "srlinux-mgmt2"
 const testDockerNetIPv4Subnet = "172.19.19.0/24"
 const testDockerNetIPv6Subnet = "2001:172:19:19::1/80"

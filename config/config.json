@@ -1,5 +1,4 @@
 
-
     {
       "system": {
           "gnmi-server": {
@@ -25,7 +24,6 @@
             "network-instance": [
               {
                 "name": "mgmt",
-                "source-address": "0.0.0.0",
                 "protocol": {
                   "http": {
                     "admin-state": "enable",
@@ -80,4 +78,4 @@
         }
       ]
     }
-
+        
