@@ -14,7 +14,6 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/henderiw/kubemon2/lib/logutils"
@@ -260,32 +259,40 @@ func (d *device) create() {
 		Sysctls:     d.Sysctls,
 		Privileged:  true,
 		NetworkMode: container.NetworkMode(d.DefaultNetwork),
-		Mounts: []mount.Mount{
-			{
-				Type:     mount.TypeBind,
-				Source:   d.Mounts["license"].source,
-				Target:   d.Mounts["license"].destination,
-				ReadOnly: d.Mounts["license"].readOnly,
+		/*
+			Mounts: []mount.Mount{
+				{
+					Type:     mount.TypeBind,
+					Source:   d.Mounts["license"].source,
+					Target:   d.Mounts["license"].destination,
+					ReadOnly: d.Mounts["license"].readOnly,
+				},
+				{
+					Type:     mount.TypeBind,
+					Source:   d.Mounts["startup"].source,
+					Target:   d.Mounts["startup"].destination,
+					ReadOnly: d.Mounts["startup"].readOnly,
+				},
+				{
+					Type:     mount.TypeBind,
+					Source:   d.Mounts["topologyYAML"].source,
+					Target:   d.Mounts["topologyYAML"].destination,
+					ReadOnly: d.Mounts["topologyYAML"].readOnly,
+				},
+				{
+					Type:     mount.TypeBind,
+					Source:   d.Mounts["envConf"].source,
+					Target:   d.Mounts["envConf"].destination,
+					ReadOnly: d.Mounts["envConf"].readOnly,
+				},
+				{
+					Type:     mount.TypeBind,
+					Source:   d.Mounts["checkPoint"].source,
+					Target:   d.Mounts["checkPoint"].destination,
+					ReadOnly: d.Mounts["checkPoint"].readOnly,
+				},
 			},
-			{
-				Type:     mount.TypeBind,
-				Source:   d.Mounts["startup"].source,
-				Target:   d.Mounts["startup"].destination,
-				ReadOnly: d.Mounts["startup"].readOnly,
-			},
-			{
-				Type:     mount.TypeBind,
-				Source:   d.Mounts["topologyYAML"].source,
-				Target:   d.Mounts["topologyYAML"].destination,
-				ReadOnly: d.Mounts["topologyYAML"].readOnly,
-			},
-			{
-				Type:     mount.TypeBind,
-				Source:   d.Mounts["envConf"].source,
-				Target:   d.Mounts["envConf"].destination,
-				ReadOnly: d.Mounts["envConf"].readOnly,
-			},
-		},
+		*/
 	}, nil, "")
 	if err != nil {
 		log.Error(err)
