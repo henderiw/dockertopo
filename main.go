@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -131,6 +132,23 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	startup := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
 	topologyYAML := path.Join(path.Dir(t), configDir+config.Prefix+"nodeName-X")
 	envConf := path.Join(path.Dir(t), configDir+"srlinux.conf")
+
+	license, err := filepath.Abs(license)
+	if err == nil {
+		log.Info("Absolute license path:", license)
+	}
+	startup, err = filepath.Abs(startup)
+	if err == nil {
+		log.Info("Absolute startup path:", startup)
+	}
+	topologyYAML, err = filepath.Abs(topologyYAML)
+	if err == nil {
+		log.Info("Absolute topologyYAML path:", topologyYAML)
+	}
+	envConf, err = filepath.Abs(envConf)
+	if err == nil {
+		log.Info("Absolute envConf path:", envConf)
+	}
 	log.Info(path.IsAbs(license))
 	log.Info(path.IsAbs(startup))
 	log.Info(path.IsAbs(topologyYAML))
