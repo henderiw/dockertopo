@@ -118,6 +118,7 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.Interfaces = make(map[string]link)
 	d.Mounts = make(map[string]volume)
 	d.Volumes = make(map[string]struct{})
+	d.Binds = make([]string, 5)
 	d.Labels = make(map[string]string)
 	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
