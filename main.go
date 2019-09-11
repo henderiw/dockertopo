@@ -82,7 +82,8 @@ type device struct {
 	Sysctls        map[string]string //  {'net.ipv4.ip_forward': 1}
 	EntryCmd       string            //'docker exec -it {} sh'.format(self.name)
 	Interfaces     map[string]link
-	Volumes        map[string]volume
+	Mounts         map[string]volume
+	Volumes        map[string]struct{}
 	Labels         map[string]string
 	Ports          struct {
 	}
@@ -114,13 +115,12 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.EntryCmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no admin@$(docker inspect {} --format '.format(self.name) + '\"{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\")"
 	// Setting up extra variables
 	d.Interfaces = make(map[string]link)
-	d.Volumes = make(map[string]volume)
+	d.Mounts = make(map[string]volume)
+	d.Volumes = make(map[string]struct{})
 	d.Labels = make(map[string]string)
 	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
 	d.Container = ""
-	d.User = ""
-	d.Detach = true
 
 	d.getConfig(t, config)
 
@@ -158,19 +158,26 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	v.source = license
 	v.destination = "/opt/srlinux/etc/license.key"
 	v.readOnly = true
-	d.Volumes["license"] = v
+	d.Mounts["license"] = v
 	v.source = startup
 	v.destination = "/etc/opt/srlinux/config.json"
 	v.readOnly = false
-	d.Volumes["startup"] = v
+	d.Mounts["startup"] = v
 	v.source = topologyYAML
 	v.destination = "/tmp/topology.yml"
 	v.readOnly = true
-	d.Volumes["topologyYAML"] = v
+	d.Mounts["topologyYAML"] = v
 	v.source = envConf
 	v.destination = "/home/admin/.srlinux.conf"
 	v.readOnly = false
-	d.Volumes["envConf"] = v
+	d.Mounts["envConf"] = v
+
+	d.Volumes = map[string]struct{}{
+		d.Mounts["license"].destination:      struct{}{},
+		d.Mounts["startup"].destination:      struct{}{},
+		d.Mounts["topologyYAML"].destination: struct{}{},
+		d.Mounts["envConf"].destination:      struct{}{},
+	}
 
 }
 
@@ -217,13 +224,16 @@ func (d *device) create() {
 	*/
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image:    d.Image,
-		Cmd:      strings.Fields(d.Container),
-		Env:      d.Environment,
-		Hostname: d.Name,
-		Tty:      true,
-		User:     d.User,
-		Labels:   d.Labels,
+		Image:        d.Image,
+		Cmd:          strings.Fields(d.Command),
+		Env:          d.Environment,
+		AttachStdout: true,
+		AttachStderr: true,
+		Hostname:     d.Name,
+		Volumes:      d.Volumes,
+		Tty:          true,
+		User:         d.User,
+		Labels:       d.Labels,
 	}, &container.HostConfig{
 
 		Sysctls:    d.Sysctls,
@@ -231,27 +241,27 @@ func (d *device) create() {
 		Mounts: []mount.Mount{
 			{
 				Type:     mount.TypeBind,
-				Source:   d.Volumes["license"].source,
-				Target:   d.Volumes["license"].destination,
-				ReadOnly: d.Volumes["license"].readOnly,
+				Source:   d.Mounts["license"].source,
+				Target:   d.Mounts["license"].destination,
+				ReadOnly: d.Mounts["license"].readOnly,
 			},
 			{
 				Type:     mount.TypeBind,
-				Source:   d.Volumes["startup"].source,
-				Target:   d.Volumes["startup"].destination,
-				ReadOnly: d.Volumes["startup"].readOnly,
+				Source:   d.Mounts["startup"].source,
+				Target:   d.Mounts["startup"].destination,
+				ReadOnly: d.Mounts["startup"].readOnly,
 			},
 			{
 				Type:     mount.TypeBind,
-				Source:   d.Volumes["topologyYAML"].source,
-				Target:   d.Volumes["topologyYAML"].destination,
-				ReadOnly: d.Volumes["topologyYAML"].readOnly,
+				Source:   d.Mounts["topologyYAML"].source,
+				Target:   d.Mounts["topologyYAML"].destination,
+				ReadOnly: d.Mounts["topologyYAML"].readOnly,
 			},
 			{
 				Type:     mount.TypeBind,
-				Source:   d.Volumes["envConf"].source,
-				Target:   d.Volumes["envConf"].destination,
-				ReadOnly: d.Volumes["envConf"].readOnly,
+				Source:   d.Mounts["envConf"].source,
+				Target:   d.Mounts["envConf"].destination,
+				ReadOnly: d.Mounts["envConf"].readOnly,
 			},
 		},
 	}, nil, "")
