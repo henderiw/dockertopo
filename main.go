@@ -278,6 +278,8 @@ func (d *device) get() string {
 
 	for _, container := range containers {
 		log.Info("Created containers :", container.ID, container.Names, container.Labels)
+		log.Info("Container Name from docker", container.Names[0])
+		log.Info("Container Name from device", d.Name)
 		if container.Names[0] == d.Name {
 			log.Info("Container is already created", container.ID)
 			return container.ID
