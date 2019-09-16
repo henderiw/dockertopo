@@ -117,7 +117,7 @@ type device struct {
 	Labels         map[string]string
 	Ports          struct {
 	}
-	Container types.Container
+	Container string
 	User      string
 	Detach    bool // true
 }
@@ -151,7 +151,7 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.Labels = make(map[string]string)
 	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
-	//d.Container =
+	d.Container = ""
 
 	d.getConfig(t, config)
 
@@ -254,7 +254,7 @@ func (d *device) updateStartMode(intName string, link link) {
 
 func (d *device) getOrCreate() {
 	log.Info("Obtaining a pointer to container: %s", d.Name)
-	d.Container = d.get()
+	d.get()
 	fmt.Printf("d.Container: %#v", d.Container)
 	/*
 		if d.Container == types.Container {
@@ -385,10 +385,12 @@ func (d *device) start() int {
 	if &d.Container == nil {
 		d.getOrCreate()
 	}
-	if d.Container.Status == "running" {
-		log.Info("Container %s already running", d.Name)
-		return 1
-	}
+	/*
+		if d.Container.Status == "running" {
+			log.Info("Container %s already running", d.Name)
+			return 1
+		}
+	*/
 	if d.StartMode == "manual" {
 
 	} else {
