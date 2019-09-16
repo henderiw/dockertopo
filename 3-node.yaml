@@ -6,6 +6,6 @@ image: 'srlinux:v0.5.0-190'
 base: 9000
 
 links:
-  - endpoints: ['srlinux-A:e1-1', 'srlinux-B:e1-1']
-  - endpoints: ['srlinux-A:e1-2', 'srlinux-C:e1-2']
-  - endpoints: ['srlinux-B:e1-3', 'srlinux-C:e1-3']
+  - endpoints: ['srlinux-AA:e1-1', 'srlinux-BB:e1-1']
+  - endpoints: ['srlinux-AA:e1-2', 'srlinux-CC:e1-2']
+  - endpoints: ['srlinux-BB:e1-3', 'srlinux-CC:e1-3']

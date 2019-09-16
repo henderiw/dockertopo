@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
@@ -15,7 +15,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/henderiw/kubemon2/lib/logutils"
 
 	log "github.com/sirupsen/logrus"
@@ -29,7 +28,7 @@ func createDockerBridge() {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
 	log.Info("combined out:\n%s\n", string(out))
-	if strings.Contains(string(out), "srlinux-mgmt2") == false {
+	if strings.Contains(string(out), testDockerNet) == false {
 		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
 
 		cmd := exec.Command("docker", "network", "create", "-d", "bridge", "--subnet", testDockerNetIPv4Subnet, "--ipv6", "--subnet", testDockerNetIPv6Subnet, "--opt", "com.docker.network.bridge.name="+testDockerNet, testDockerNet)
@@ -39,6 +38,37 @@ func createDockerBridge() {
 		}
 		log.Info("combined out:\n%s\n", string(out))
 	}
+}
+
+func disableCheckSumoffload(bridge string) {
+	log.Info("Disable checksum offload on bridge: %s", bridge)
+	cmd := exec.Command("ethtool", "--offload", bridge, "rx", "off", "tx", "off")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out:\n%s\n", string(out))
+}
+
+func disableRPFCheck() {
+	log.Info("Disable RPF check on host")
+	cmd := exec.Command("echo", "0", ">", "/proc/sys/net/ipv4/conf/default/rp_filter")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out:\n%s\n", string(out))
+	cmd = exec.Command("echo", "0", ">", "/proc/sys/net/ipv4/conf/all/rp_filter")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out:\n%s\n", string(out))
+}
+
+func enableLLDP() {
+	log.Info("Enable LLDP")
+
 }
 
 type topologyConfig struct {
@@ -87,7 +117,7 @@ type device struct {
 	Labels         map[string]string
 	Ports          struct {
 	}
-	Container string
+	Container types.Container
 	User      string
 	Detach    bool // true
 }
@@ -121,7 +151,7 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.Labels = make(map[string]string)
 	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
-	d.Container = ""
+	//d.Container =
 
 	d.getConfig(t, config)
 
@@ -210,6 +240,7 @@ func (d *device) connect(intName string, l link) {
 }
 
 func (d *device) updateStartMode(intName string, link link) {
+	log.Info("Update start Mode with driver %s", link.Driver)
 	var newStartMode string
 	if link.Driver == "veth" {
 		newStartMode = "manual"
@@ -222,14 +253,23 @@ func (d *device) updateStartMode(intName string, link link) {
 }
 
 func (d *device) getOrCreate() {
+	log.Info("Obtaining a pointer to container: %s", d.Name)
+	d.Container = d.get()
+	fmt.Printf("d.Container: %#v", d.Container)
+	/*
+		if d.Container == types.Container {
+			d.create()
+		}
+	*/
 
 }
 
 func (d *device) update() {
-
+	log.Info("Update device")
 }
 
 func (d *device) create() {
+	log.Info("Container create")
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -298,35 +338,62 @@ func (d *device) create() {
 		log.Error(err)
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		log.Error(err)
-	}
+	log.Info("Container Create Response: %#v", resp)
+	//return resp.ID
 
-	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
-	select {
-	case err := <-errCh:
+	/*
+		statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+		select {
+		case err := <-errCh:
+			if err != nil {
+				log.Error(err)
+			}
+		case <-statusCh:
+		}
+
+		out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
 		if err != nil {
 			log.Error(err)
 		}
-	case <-statusCh:
-	}
 
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+		stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+	*/
+}
+
+func (d *device) get() types.Container {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		log.Error(err)
 	}
 
-	stdcopy.StdCopy(os.Stdout, os.Stderr, out)
+	resp, err := cli.ContainerList(ctx, types.ContainerListOptions{All: true})
+	if err != nil {
+		log.Error(err)
+	}
+
+	return resp[0]
 }
 
-func (d *device) get() {
-
+func (d *device) containerStart() {
+	log.Info("Container Start")
 }
 
-func (d *device) start() {
-	if d.Container == "" {
+func (d *device) start() int {
+	log.Info("Device Start")
+	if &d.Container == nil {
 		d.getOrCreate()
 	}
+	if d.Container.Status == "running" {
+		log.Info("Container %s already running", d.Name)
+		return 1
+	}
+	if d.StartMode == "manual" {
+
+	} else {
+		log.Info("Unsupported container start mode %s", d.StartMode)
+	}
+	return 0
 }
 
 func (d *device) attach() {
@@ -514,7 +581,15 @@ func main() {
 	}
 
 	for _, device := range devices {
-		device.create()
+		device.start()
 	}
+
+	//disable chacksum offload on docker0, sr-linux bridge
+	disableCheckSumoffload(testDockerNet)
+
+	//enable LLDP
+
+	//disable rpk check
+	disableRPFCheck()
 
 }
