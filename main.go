@@ -263,6 +263,8 @@ func (d *device) getOrCreate() {
 }
 
 func (d *device) get() string {
+	log.Info("Get device")
+	log.Info("Container Name:", d.Name)
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -276,6 +278,10 @@ func (d *device) get() string {
 
 	for _, container := range containers {
 		log.Info("Created containers :", container.ID, container.Names, container.Labels)
+		if container.Names[0] == d.Name {
+			log.Info("Container is already created", container.ID)
+			return container.ID
+		}
 	}
 	return ""
 
@@ -287,6 +293,7 @@ func (d *device) update() {
 
 func (d *device) create() {
 	log.Info("Container create")
+	log.Info("Container Name:", d.Name)
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -379,6 +386,7 @@ func (d *device) create() {
 
 func (d *device) containerStart() {
 	log.Info("Container Start")
+	log.Info("Container Name:", d.Name)
 }
 
 func (d *device) start() int {
