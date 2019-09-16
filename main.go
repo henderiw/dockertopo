@@ -240,7 +240,7 @@ func (d *device) connect(intName string, l link) {
 }
 
 func (d *device) updateStartMode(intName string, link link) {
-	log.Info("Update start Mode with driver %s", link.Driver)
+	log.Info("Update start Mode with driver: ", link.Driver)
 	var newStartMode string
 	if link.Driver == "veth" {
 		newStartMode = "manual"
@@ -253,9 +253,9 @@ func (d *device) updateStartMode(intName string, link link) {
 }
 
 func (d *device) getOrCreate() {
-	log.Info("Obtaining a pointer to container: %s", d.Name)
-	c := d.get()
-	fmt.Printf("d.Container: %#v", c)
+	log.Info("Obtaining a pointer to container: ", d.Name)
+	d.get()
+	//fmt.Printf("d.Container:", c)
 	/*
 		if d.Container == types.Container {
 			d.create()
