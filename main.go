@@ -254,8 +254,8 @@ func (d *device) updateStartMode(intName string, link link) {
 
 func (d *device) getOrCreate() {
 	log.Info("Obtaining a pointer to container: %s", d.Name)
-	d.get()
-	fmt.Printf("d.Container: %#v", d.Container)
+	c := d.get()
+	fmt.Printf("d.Container: %#v", c)
 	/*
 		if d.Container == types.Container {
 			d.create()
@@ -382,7 +382,7 @@ func (d *device) containerStart() {
 func (d *device) start() int {
 	log.Info("Device Start")
 	log.Info("Device Container: %#v", d.Container)
-	if &d.Container == nil {
+	if d.Container == "" {
 		d.getOrCreate()
 	}
 	/*
