@@ -350,7 +350,7 @@ func (d *device) create() {
 				},
 			},
 		*/
-	}, nil, "")
+	}, nil, d.Name)
 	if err != nil {
 		log.Error(err)
 	}
