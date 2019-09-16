@@ -264,6 +264,23 @@ func (d *device) getOrCreate() {
 
 }
 
+func (d *device) get() {
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		panic(err)
+	}
+
+	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	for _, container := range containers {
+		fmt.Println(container.ID)
+	}
+}
+
 func (d *device) update() {
 	log.Info("Update device")
 }
@@ -358,21 +375,6 @@ func (d *device) create() {
 
 		stdcopy.StdCopy(os.Stdout, os.Stderr, out)
 	*/
-}
-
-func (d *device) get() types.Container {
-	ctx := context.Background()
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		log.Error(err)
-	}
-
-	resp, err := cli.ContainerList(ctx, types.ContainerListOptions{All: true})
-	if err != nil {
-		log.Error(err)
-	}
-
-	return resp[0]
 }
 
 func (d *device) containerStart() {
