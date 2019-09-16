@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path"
@@ -254,17 +253,16 @@ func (d *device) updateStartMode(intName string, link link) {
 
 func (d *device) getOrCreate() {
 	log.Info("Obtaining a pointer to container: ", d.Name)
-	d.get()
-	//fmt.Printf("d.Container:", c)
-	/*
-		if d.Container == types.Container {
-			d.create()
-		}
-	*/
+	d.Container = d.get()
+	log.Info("Container info after get procedure:", d.Container)
+	if d.Container == "" {
+		log.Info("Container info after get procedure:", d.Container)
+		d.create()
+	}
 
 }
 
-func (d *device) get() {
+func (d *device) get() string {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -277,8 +275,10 @@ func (d *device) get() {
 	}
 
 	for _, container := range containers {
-		fmt.Println(container.ID)
+		log.Info("Created containers :", container.ID, container.Names, container.Labels)
 	}
+	return ""
+
 }
 
 func (d *device) update() {
@@ -383,7 +383,7 @@ func (d *device) containerStart() {
 
 func (d *device) start() int {
 	log.Info("Device Start")
-	log.Info("Device Container: %#v", d.Container)
+	log.Info("Device Container: ", d.Container)
 	if d.Container == "" {
 		d.getOrCreate()
 	}
