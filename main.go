@@ -381,6 +381,7 @@ func (d *device) containerStart() {
 
 func (d *device) start() int {
 	log.Info("Device Start")
+	log.Info("Device Container: %#v", d.Container)
 	if &d.Container == nil {
 		d.getOrCreate()
 	}
