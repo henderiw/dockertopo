@@ -288,7 +288,7 @@ func (d *device) get(o string) (string, string) {
 	}
 
 	for _, container := range containers {
-		log.Info("Created containers :", container.ID, container.Names, container.Labels)
+		log.Info("Containers :", container.ID, container.Names, container.Labels)
 		log.Info("Container Name from docker api: ", container.Names[0])
 		log.Info("Container Name from device config: ", d.Name)
 		if container.Names[0] == "/"+d.Name {
