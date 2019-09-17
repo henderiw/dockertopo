@@ -39,6 +39,25 @@ func createDockerBridge() {
 	}
 }
 
+func deleteDockerBridge() {
+	cmd := exec.Command("docker", "network", "ls")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out:\n%s\n", string(out))
+	if strings.Contains(string(out), testDockerNet) == false {
+		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
+
+		cmd := exec.Command("docker", "network", "rm", testDockerNet)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out:\n%s\n", string(out))
+	}
+}
+
 func disableCheckSumoffload(bridge string) {
 	log.Info("Disable checksum offload on bridge: %s", bridge)
 	cmd := exec.Command("ethtool", "--offload", bridge, "rx", "off", "tx", "off")
@@ -716,6 +735,8 @@ func main() {
 		for _, device := range devices {
 			device.destroy()
 		}
+
+		deleteDockerBridge()
 		break
 
 	default:
