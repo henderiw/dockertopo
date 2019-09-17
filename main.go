@@ -253,9 +253,9 @@ func (d *device) updateStartMode(intName string, link link) {
 
 }
 
-func (d *device) getOrCreate() {
+func (d *device) getOrCreate(o string) {
 	log.Info("Obtaining a pointer to container: ", d.Name)
-	d.Container, d.ContainerStatus = d.get()
+	d.Container, d.ContainerStatus = d.get(o)
 	log.Info("Container info after get procedure:", d.Container)
 	if d.Container == "" {
 		log.Info("Container info after get procedure:", d.Container)
@@ -264,7 +264,7 @@ func (d *device) getOrCreate() {
 
 }
 
-func (d *device) get() (string, string) {
+func (d *device) get(o string) (string, string) {
 	log.Info("Get device")
 	log.Info("Container Name:", d.Name)
 	ctx := context.Background()
@@ -272,20 +272,27 @@ func (d *device) get() (string, string) {
 	if err != nil {
 		panic(err)
 	}
+	var containers []types.Container
 
-	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{
-		All: true,
-	})
+	if o == "create" {
+		// list create containers
+		containers, err = cli.ContainerList(ctx, types.ContainerListOptions{
+			All: true,
+		})
+	} else {
+		// list running containers
+		containers, err = cli.ContainerList(ctx, types.ContainerListOptions{})
+	}
 	if err != nil {
 		panic(err)
 	}
 
 	for _, container := range containers {
 		log.Info("Created containers :", container.ID, container.Names, container.Labels)
-		log.Info("Container Name from docker", container.Names[0])
-		log.Info("Container Name from device", d.Name)
+		log.Info("Container Name from docker api: ", container.Names[0])
+		log.Info("Container Name from device config: ", d.Name)
 		if container.Names[0] == "/"+d.Name {
-			log.Info("Container is already created: ", container.ID)
+			log.Info("Container is already created or running: ", container.ID)
 			log.Info("Container status: ", container.Status)
 			return container.ID, container.Status
 		}
@@ -407,11 +414,27 @@ func (d *device) containerStart() {
 	}
 }
 
+func (d *device) containerDestroy() {
+	log.Info("Container Destroy")
+	log.Info("Container Name:", d.Name)
+
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = cli.ContainerRemove(ctx, d.Container, types.ContainerRemoveOptions{})
+	if err != nil {
+		log.Error(err)
+	}
+}
+
 func (d *device) start() int {
 	log.Info("Device Start")
 	log.Info("Device Container: ", d.Container)
 	if d.Container == "" {
-		d.getOrCreate()
+		d.getOrCreate("create")
 	}
 	if d.ContainerStatus == "running" {
 		log.Info("Container %s already running", d.Name)
@@ -427,11 +450,23 @@ func (d *device) start() int {
 	return 0
 }
 
-func (d *device) attach() {
+func (d *device) destroy() int {
+	log.Info("Device Destroy")
+	log.Info("Device Container: ", d.Container)
+	if d.Container == "" {
+		d.getOrCreate("destroy")
+	}
+	if d.ContainerStatus == "running" {
+		log.Info("Container %s running", d.Name)
+		return 1
+	}
 
+	d.containerDestroy()
+
+	return 0
 }
 
-func (d *device) kill() {
+func (d *device) attach() {
 
 }
 
@@ -576,6 +611,7 @@ func main() {
 
 	// Install a hook that adds file/line no information.
 	log.AddHook(&logutils.ContextHook{})
+
 	// Parse arguments
 	o, t := parseArgs()
 
@@ -607,20 +643,37 @@ func main() {
 
 	if runtime.GOOS == "windows" {
 		log.Error("Can't Execute this on a windows machine")
-	} else {
+		panic("can't run on windows")
+	}
+
+	switch o {
+	case "create":
+		log.Println("create Workflow")
 		createDockerBridge()
+
+		for _, device := range devices {
+			device.start()
+		}
+
+		//disable chacksum offload on docker0, sr-linux bridge
+		disableCheckSumoffload(testDockerNet)
+
+		//enable LLDP
+
+		//disable rpk check
+		disableRPFCheck()
+
+		break
+	case "destroy":
+		log.Println("destroy Workflow")
+		for _, device := range devices {
+			device.destroy()
+		}
+		break
+
+	default:
+		log.Fatalln("Wrong Operation Input (create or destroy)")
+
 	}
-
-	for _, device := range devices {
-		device.start()
-	}
-
-	//disable chacksum offload on docker0, sr-linux bridge
-	disableCheckSumoffload(testDockerNet)
-
-	//enable LLDP
-
-	//disable rpk check
-	disableRPFCheck()
 
 }
