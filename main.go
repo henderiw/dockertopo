@@ -274,7 +274,7 @@ func (d *device) get(o string) (string, string) {
 	}
 	var containers []types.Container
 
-	if o == "create" {
+	if o == "create" || o == "update" {
 		// list create containers
 		containers, err = cli.ContainerList(ctx, types.ContainerListOptions{
 			All: true,
@@ -302,7 +302,8 @@ func (d *device) get(o string) (string, string) {
 }
 
 func (d *device) update() {
-	log.Info("Update device")
+	log.Info("Update device information")
+	d.Container, d.ContainerStatus = d.get("update")
 }
 
 func (d *device) create() {
@@ -414,6 +415,22 @@ func (d *device) containerStart() {
 	}
 }
 
+func (d *device) containerStop() {
+	log.Info("Container Stop")
+	log.Info("Container Name:", d.Name)
+
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = cli.ContainerStop(ctx, d.Container, nil)
+	if err != nil {
+		log.Error(err)
+	}
+}
+
 func (d *device) containerDestroy() {
 	log.Info("Container Destroy")
 	log.Info("Container Name:", d.Name)
@@ -430,7 +447,39 @@ func (d *device) containerDestroy() {
 	}
 }
 
-func (d *device) start() int {
+func (d *device) containerPause() {
+	log.Info("Container Pause")
+	log.Info("Container Name:", d.Name)
+
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = cli.ContainerPause(ctx, d.Container)
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func (d *device) containerUnpause() {
+	log.Info("Container Unpause")
+	log.Info("Container Name:", d.Name)
+
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = cli.ContainerUnpause(ctx, d.Container)
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func (d *device) start() {
 	log.Info("Device Start")
 	log.Info("Device Container: ", d.Container)
 	if d.Container == "" {
@@ -438,7 +487,6 @@ func (d *device) start() int {
 	}
 	if d.ContainerStatus == "running" {
 		log.Info("Container %s already running", d.Name)
-		return 1
 	}
 
 	if d.StartMode == "manual" {
@@ -447,23 +495,22 @@ func (d *device) start() int {
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
 	}
-	return 0
+	d.update()
+	d.containerPause()
+	d.containerUnpause()
+
 }
 
-func (d *device) destroy() int {
-	log.Info("Device Destroy")
+func (d *device) destroy() {
+	log.Info("Device Destroy with destroying the container")
 	log.Info("Device Container: ", d.Container)
 	if d.Container == "" {
 		d.getOrCreate("destroy")
+	} else {
+		log.Info("Destroying exisitng container: ", d.Container)
 	}
-	if d.ContainerStatus == "running" {
-		log.Info("Container %s running", d.Name)
-		return 1
-	}
-
+	d.containerStop()
 	d.containerDestroy()
-
-	return 0
 }
 
 func (d *device) attach() {
