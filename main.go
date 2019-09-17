@@ -394,6 +394,17 @@ func (d *device) create() {
 func (d *device) containerStart() {
 	log.Info("Container Start")
 	log.Info("Container Name:", d.Name)
+
+	ctx := context.Background()
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		log.Error(err)
+	}
+
+	err = cli.ContainerStart(ctx, d.Container, types.ContainerStartOptions{})
+	if err != nil {
+		log.Error(err)
+	}
 }
 
 func (d *device) start() int {
@@ -408,7 +419,8 @@ func (d *device) start() int {
 	}
 
 	if d.StartMode == "manual" {
-
+		log.Info("Container %s to be started", d.Name)
+		d.containerStart()
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
 	}
