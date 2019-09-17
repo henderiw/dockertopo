@@ -116,9 +116,10 @@ type device struct {
 	Labels         map[string]string
 	Ports          struct {
 	}
-	Container string
-	User      string
-	Detach    bool // true
+	Container       string
+	ContainerStatus string
+	User            string
+	Detach          bool // true
 }
 
 func (d *device) init(name, t string, config topologyConfig) {
@@ -151,6 +152,7 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.Labels[config.Prefix] = d.Name
 	// Pointer to docker SDK object
 	d.Container = ""
+	d.ContainerStatus = ""
 
 	d.getConfig(t, config)
 
@@ -253,7 +255,7 @@ func (d *device) updateStartMode(intName string, link link) {
 
 func (d *device) getOrCreate() {
 	log.Info("Obtaining a pointer to container: ", d.Name)
-	d.Container = d.get()
+	d.Container, d.ContainerStatus = d.get()
 	log.Info("Container info after get procedure:", d.Container)
 	if d.Container == "" {
 		log.Info("Container info after get procedure:", d.Container)
@@ -262,7 +264,7 @@ func (d *device) getOrCreate() {
 
 }
 
-func (d *device) get() string {
+func (d *device) get() (string, string) {
 	log.Info("Get device")
 	log.Info("Container Name:", d.Name)
 	ctx := context.Background()
@@ -283,11 +285,12 @@ func (d *device) get() string {
 		log.Info("Container Name from docker", container.Names[0])
 		log.Info("Container Name from device", d.Name)
 		if container.Names[0] == "/"+d.Name {
-			log.Info("Container is already created", container.ID)
-			return container.ID
+			log.Info("Container is already created: ", container.ID)
+			log.Info("Container status: ", container.Status)
+			return container.ID, container.Status
 		}
 	}
-	return ""
+	return "", ""
 
 }
 
@@ -399,12 +402,11 @@ func (d *device) start() int {
 	if d.Container == "" {
 		d.getOrCreate()
 	}
-	/*
-		if d.Container.Status == "running" {
-			log.Info("Container %s already running", d.Name)
-			return 1
-		}
-	*/
+	if d.ContainerStatus == "running" {
+		log.Info("Container %s already running", d.Name)
+		return 1
+	}
+
 	if d.StartMode == "manual" {
 
 	} else {
