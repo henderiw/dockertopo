@@ -262,11 +262,9 @@ func (d *device) connect(intName string, l link) {
 
 func (d *device) attach() {
 	fmt.Printf("d.Interfaces: %#v", d.Interfaces)
-	/*
-		for _, interface := range d.Interfaces {
-			log.Info("Attaching container {} interface {} to its link", d.Name, intName)
-		}
-	*/
+	for name, link := range d.Interfaces {
+		log.Info("Attaching container {} interface {} to its link", name, link)
+	}
 }
 
 func (d *device) updateStartMode(intName string, link link) {
