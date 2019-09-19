@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path"
@@ -261,7 +260,6 @@ func (d *device) connect(intName string, l link) {
 }
 
 func (d *device) attach() {
-	fmt.Printf("d.Interfaces: %#v", d.Interfaces)
 	for name, link := range d.Interfaces {
 		log.Info("Attaching container {} interface {} to its link", name, link)
 	}
