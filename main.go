@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os/exec"
 	"path"
@@ -257,6 +258,15 @@ func (d *device) connect(intName string, l link) {
 	//log.Info("Interfaces:", d.Interfaces)
 
 	d.updateStartMode(intName, l)
+}
+
+func (d *device) attach() {
+	fmt.Printf("d.Interfaces: %#v", d.Interfaces)
+	/*
+		for _, interface := range d.Interfaces {
+			log.Info("Attaching container {} interface {} to its link", d.Name, intName)
+		}
+	*/
 }
 
 func (d *device) updateStartMode(intName string, link link) {
@@ -516,6 +526,7 @@ func (d *device) start() {
 	}
 	d.update()
 	d.containerPause()
+	d.attach()
 	d.containerUnpause()
 
 }
@@ -530,10 +541,6 @@ func (d *device) destroy() {
 	}
 	d.containerStop()
 	d.containerDestroy()
-}
-
-func (d *device) attach() {
-
 }
 
 type link struct {
