@@ -520,10 +520,7 @@ func (d *device) containerUnpause() {
 
 func trimQuotes(s string) string {
 	if len(s) >= 2 {
-		switch {
-		case s[0] == '"' && s[len(s)-1] == '"':
-			return s[1 : len(s)-1]
-		case s[0] == '\'' && s[len(s)-1] == '\'':
+		if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'') {
 			return s[1 : len(s)-1]
 		}
 	}
