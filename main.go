@@ -544,6 +544,9 @@ func (d *device) start() {
 		log.Info("Container PID: ", d.Pid)
 		//d.Pid, _ = strconv.Unquote(d.Pid)
 		d.Pid = trimQuotes(d.Pid)
+		for i := 1; i < len(d.Pid); i++ {
+			log.Info("Container PID: ", d.Pid[i])
+		}
 		log.Info("Container PID after quote trim: ", d.Pid)
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
