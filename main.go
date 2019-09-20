@@ -613,7 +613,11 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 
 	log.Info("DeviceID: ", d.DeviceID, "Remote device IdA: ", l.DeviceIDA, "Remote device IdB: ", l.DeviceIDB)
 
-	//if d.DeviceID < l.DeviceIDA
+	if l.DeviceIDA > l.DeviceIDB {
+		log.Info("We should reverese the veth creation: first B than A")
+	} else {
+		log.Info("Normal veth creation")
+	}
 
 	/*
 		if IntIdx == 0 {
@@ -732,6 +736,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 			//log.Info("parseEndpoints Device init:", device)
 		}
 
+		log.Info("Device Link Connection:", "Link: ", link, "Device A: ", deviceIDA, "Device B: ", deviceIDB)
 		device.connect(intName, link, idx, deviceIDA, deviceIDB)
 		//log.Info("parseEndpoints Device connect:", device)
 
