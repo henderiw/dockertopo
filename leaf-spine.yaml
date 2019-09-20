@@ -1,6 +1,6 @@
 version: 2
 driver: 'veth'
-prefix: 'leafSpine'
+prefix: 'LS'
 nodetype: 'srlinux'
 image: 'srlinux:v0.5.0-190'
 base: 9000
