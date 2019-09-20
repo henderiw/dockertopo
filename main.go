@@ -90,7 +90,8 @@ func enableLLDP() {
 }
 
 func getContainerPid(containerID string) {
-	cmd := exec.Command("docker", "inspect", "--format", "'{{.State.Pid}}'", containerID)
+	log.Info("getting container PID: %s\n", containerID)
+	cmd := exec.Command("docker", "inspect", "--format", `'{{.State.Pid}}'`, containerID)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
