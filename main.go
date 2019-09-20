@@ -549,9 +549,9 @@ func (d *device) start() {
 		log.Info("Unsupported container start mode: ", d.StartMode)
 	}
 	d.update()
-	d.containerPause()
+	//d.containerPause()
 	d.attach()
-	d.containerUnpause()
+	//d.containerUnpause()
 
 }
 
