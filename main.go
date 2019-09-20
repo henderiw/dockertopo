@@ -26,7 +26,7 @@ func createDockerBridge() {
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: ", string(out))
 	if strings.Contains(string(out), testDockerNet) == false {
 		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
 
@@ -35,7 +35,7 @@ func createDockerBridge() {
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
-		log.Info("combined out:\n%s\n", string(out))
+		log.Info("combined out: ", string(out))
 	}
 }
 
@@ -45,7 +45,7 @@ func deleteDockerBridge() {
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: ", string(out))
 	if strings.Contains(string(out), testDockerNet) == false {
 		log.Info("Docker management brdige does not exist, will create one:", testDockerNet)
 
@@ -54,18 +54,18 @@ func deleteDockerBridge() {
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
-		log.Info("combined out:\n%s\n", string(out))
+		log.Info("combined out: ", string(out))
 	}
 }
 
 func disableCheckSumoffload(bridge string) {
-	log.Info("Disable checksum offload on bridge: %s", bridge)
+	log.Info("Disable checksum offload on bridge: ", bridge)
 	cmd := exec.Command("ethtool", "--offload", bridge, "rx", "off", "tx", "off")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: ", string(out))
 }
 
 func disableRPFCheck() {
@@ -75,13 +75,13 @@ func disableRPFCheck() {
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: ", string(out))
 	cmd = exec.Command("echo", "0", ">", "/proc/sys/net/ipv4/conf/all/rp_filter")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: ", string(out))
 }
 
 func enableLLDP() {
@@ -263,7 +263,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 }
 
 func (d *device) connect(intName string, l link) {
-	log.Info("Creating a pointer to network '%s' for interface '%s'", l.Name, intName)
+	log.Info("Creating a pointer to network for interface", l.Name, intName)
 	d.Interfaces[intName] = l
 	//log.Info("Interfaces:", d.Interfaces)
 
@@ -284,7 +284,7 @@ func (d *device) updateStartMode(intName string, link link) {
 	} else {
 		newStartMode = "auto"
 	}
-	log.Info("Updating start_mode from '%s' to '%s'", d.StartMode, newStartMode)
+	log.Info("Updating start_mode from to ", d.StartMode, newStartMode)
 	d.StartMode = newStartMode
 
 }
@@ -415,7 +415,7 @@ func (d *device) create() {
 		log.Error(err)
 	}
 
-	log.Info("Container Create Response: %#v", resp)
+	log.Info("Container Create Response: ", resp)
 	//return resp.ID
 
 	/*
@@ -518,15 +518,6 @@ func (d *device) containerUnpause() {
 	}
 }
 
-func trimQuotes(s string) string {
-	if len(s) >= 2 {
-		if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'') {
-			return s[1 : len(s)-1]
-		}
-	}
-	return s
-}
-
 func (d *device) start() {
 	log.Info("Device Start")
 	log.Info("Device Container: ", d.Container)
@@ -534,31 +525,24 @@ func (d *device) start() {
 		d.getOrCreate("create")
 	}
 	if d.ContainerStatus == "running" {
-		log.Info("Container %s already running", d.Name)
+		log.Info("Container already running: ", d.Name)
 	}
 
 	if d.StartMode == "manual" {
-		log.Info("Container %s to be started", d.Name)
+		log.Info("Container to be started: ", d.Name)
 		d.containerStart()
 		d.Pid = getContainerPid(d.Container)
 		log.Info("Container PID: ", d.Pid)
-		//d.Pid, _ = strconv.Unquote(d.Pid)
-		//d.Pid = trimQuotes(d.Pid)
-		//d.Pid = strings.TrimSuffix(d.Pid, `'`)
 		log.Info("Container PID length: ", len(d.Pid))
-		p := d.Pid[:len(d.Pid)-2]
-		log.Info("Container PID length: ", len(p))
-		log.Info("Container PID remove last character: ", p)
-		p = p[1:]
-		for i := 1; i < len(p); i++ {
-			log.Info("Container PID: ", p[i])
+		d.Pid = d.Pid[:len(d.Pid)-2]
+		d.Pid = d.Pid[1:]
+		for i := 1; i < len(d.Pid); i++ {
+			log.Info("Container PID: ", d.Pid[i])
 		}
-		d.Pid = p
 		log.Info("Container PID after quote trim: ", d.Pid)
-		log.Info("Container PID length: ", len(p))
 		log.Info("Container PID length: ", len(d.Pid))
 	} else {
-		log.Info("Unsupported container start mode %s", d.StartMode)
+		log.Info("Unsupported container start mode: ", d.StartMode)
 	}
 	d.update()
 	d.containerPause()
@@ -582,16 +566,16 @@ func (d *device) destroy() {
 type link struct {
 	Name     string
 	LinkType string
-	Network  string
+	Network  struct{ veth }
 	Opts     string
 	Driver   string
 }
 
 func (l *link) init(linkType, name, driver string, config topologyConfig) {
-	log.Info("Initializing a '%s' link with name '%s' and driver '%s': ", linkType, name, driver)
+	log.Info("Initializing a link with name and driver: ", linkType, name, driver)
 	l.Name = config.Prefix + "_" + name
 	l.LinkType = linkType
-	l.Network = ""
+	l.Network = struct{ veth }{}
 	l.Opts = ""
 	l.Driver = driver
 
@@ -604,7 +588,7 @@ func (l *link) getOrCreate() {
 	l.Network = l.get()
 }
 
-func (l *link) get() (network string) {
+func (l *link) get() (network struct{ veth }) {
 	log.Info("Trying to find an existing network with name:", l.Name)
 	var veth veth
 	return veth.init(l.Name)
@@ -617,7 +601,7 @@ type veth struct {
 	sideB string
 }
 
-func (v *veth) init(name string) (network string) {
+func (v *veth) init(name string) (network struct{ veth }) {
 	log.Info("Initializing a veth pair: ", name)
 	v.Name = name
 	v.sideA = name + "-a"
@@ -724,8 +708,8 @@ func main() {
 	// Parse arguments
 	o, t := parseArgs()
 
-	log.Info("Operation: '%s' ", o)
-	log.Info("Topology file: '%s' ", t)
+	log.Info("Operation: ", o)
+	log.Info("Topology file: ", t)
 
 	data, err := ioutil.ReadFile(t)
 	if err != nil {
