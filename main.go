@@ -611,8 +611,25 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 		log.Info("combined out: \n", string(out))
+
 		log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, d.Pid)
 		cmd = exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+
+		log.Info("Renaming interface in container to match sr-linux conventions: ", l.Network.sideA, d.Pid, IntName)
+		cmd = exec.Command("docker", "exec", d.Name, "ip", "link", "set", l.Network.sideA, "name", IntName)
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+
+		log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, d.Pid)
+		cmd = exec.Command("docker", "exec", d.Name, "ip", "link", "set", IntName, "up")
 		out, err = cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
@@ -622,6 +639,22 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 		log.Info("Attaching veth pair to container with pid: ", l.Network.sideB, d.Pid)
 		cmd := exec.Command("ip", "link", "set", l.Network.sideB, "netns", d.Pid)
 		out, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+
+		log.Info("Renaming interface in container to match sr-linux conventions: ", l.Network.sideB, d.Pid, IntName)
+		cmd = exec.Command("docker", "exec", d.Name, "ip", "link", "set", l.Network.sideB, "name", IntName)
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+
+		log.Info("Settigninterface up in container: ", l.Network.sideB, d.Pid, IntName)
+		cmd = exec.Command("docker", "exec", d.Name, "ip", "link", "set", IntName, "up")
+		out, err = cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
