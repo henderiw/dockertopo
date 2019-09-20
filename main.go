@@ -128,7 +128,7 @@ type volume struct {
 
 type device struct {
 	Name           string
-	DeviceIdx      int
+	DeviceID       int
 	Type           string
 	Image          string
 	Version        string
@@ -154,11 +154,11 @@ type device struct {
 	Detach          bool // true
 }
 
-func (d *device) init(name, t string, config topologyConfig, deviceIdx int) {
+func (d *device) init(name, t string, config topologyConfig, deviceID int) {
 	log.Info("Device Initialization")
 	// SRLINUX defaults
 	d.Name = config.Prefix + "_" + name
-	d.DeviceIdx = deviceIdx
+	d.DeviceID = deviceID
 	d.Type = "srlinux"
 	d.Image = config.Image
 	v := strings.Split(config.Image, ":")
@@ -266,9 +266,10 @@ func (d *device) getConfig(t string, config topologyConfig) {
 
 }
 
-func (d *device) connect(intName string, l link, idx, remoteDeviceID int) {
+func (d *device) connect(intName string, l link, idx, deviceIDA, deviceIDB int) {
 	log.Info("Creating a pointer to network for interface", l.Name, intName)
-	l.RemoteDeviceIdx = remoteDeviceID
+	l.DeviceIDA = deviceIDA
+	l.DeviceIDB = deviceIDB
 	d.Interfaces[intName] = l
 	d.InterfacesIdx[intName] = idx
 	//log.Info("Interfaces:", d.Interfaces)
@@ -571,12 +572,13 @@ func (d *device) destroy() {
 }
 
 type link struct {
-	Name            string
-	LinkType        string
-	Network         struct{ veth }
-	Opts            string
-	Driver          string
-	RemoteDeviceIdx int
+	Name      string
+	LinkType  string
+	Network   struct{ veth }
+	Opts      string
+	Driver    string
+	DeviceIDA int
+	DeviceIDB int
 }
 
 func (l *link) init(linkType, name, driver string, config topologyConfig) {
@@ -586,7 +588,8 @@ func (l *link) init(linkType, name, driver string, config topologyConfig) {
 	l.Network = struct{ veth }{}
 	l.Opts = ""
 	l.Driver = driver
-	l.RemoteDeviceIdx = 0
+	l.DeviceIDA = 0
+	l.DeviceIDB = 0
 
 	l.getOrCreate()
 
@@ -608,9 +611,9 @@ func (l *link) get() (network struct{ veth }) {
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
 
-	log.Info("DeviceId", d.DeviceIdx, "Remote device Idx", l.RemoteDeviceIdx)
+	log.Info("DeviceID: ", d.DeviceID, "Remote device IdA: ", l.DeviceIDA, "Remote device IdB: ", l.DeviceIDB)
 
-	//if d.DeviceIdx < l.RemoteDeviceIdx
+	//if d.DeviceID < l.DeviceIDA
 
 	/*
 		if IntIdx == 0 {
@@ -689,8 +692,8 @@ func (v *veth) init(name string) {
 }
 
 func parseEndpoints(endpoints []string, link link, config topologyConfig) {
-	deviceIdxA = 0
-	deviceIdxB = 0
+	deviceIDA = 0
+	deviceIDB = 0
 	for idx, endpoint := range endpoints {
 		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
@@ -710,32 +713,26 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 				found = true
 				device = d
 				if idx == 0 {
-					deviceIdxA = didx
+					deviceIDA = didx
 				} else {
-					deviceIdxB = didx
+					deviceIDB = didx
 				}
 				break
 			}
 		}
 		//log.Info("FOUND:", found)
 		if found == false {
-			device.init(deviceName, t, config, deviceIdx)
+			device.init(deviceName, t, config, deviceID)
 			if idx == 0 {
-				deviceIdxA = deviceIdx
+				deviceIDA = deviceID
 			} else {
-				deviceIdxB = deviceIdx
+				deviceIDB = deviceID
 			}
-			deviceIdx++
+			deviceID++
 			//log.Info("parseEndpoints Device init:", device)
 		}
 
-		remoteDeviceID := 0
-		if idx == 0 {
-			remoteDeviceID = deviceIdxA
-		} else {
-			remoteDeviceID = deviceIdxB
-		}
-		device.connect(intName, link, idx, remoteDeviceID)
+		device.connect(intName, link, idx, deviceIDA, deviceIDB)
 		//log.Info("parseEndpoints Device connect:", device)
 
 		if found == false {
@@ -747,7 +744,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 }
 
 func parseTopology(t string, config topologyConfig) {
-	deviceIdx = 0
+	deviceID = 0
 	for idx, endpoint := range config.Links {
 		log.Info("Parsing Link:  ", endpoint)
 		linkDriver := config.Driver
@@ -788,9 +785,9 @@ var config topologyConfig
 var t string
 var links []link
 var devices []device
-var deviceIdx int
-var deviceIdxA int
-var deviceIdxB int
+var deviceID int
+var deviceIDA int
+var deviceIDB int
 
 const configDir = "./config/"
 const configJSONDir = "json_config/"
