@@ -1,0 +1,12 @@
+version: 2
+driver: 'veth'
+prefix: 'leafSpine'
+nodetype: 'srlinux'
+image: 'srlinux:v0.5.0-190'
+base: 9000
+
+links:
+  - endpoints: ['srlinux-L1:e1-1', 'srlinux-S1:e1-1']
+  - endpoints: ['srlinux-L1:e1-2', 'srlinux-S2:e1-1']
+  - endpoints: ['srlinux-L2:e1-1', 'srlinux-S1:e1-2']
+  - endpoints: ['srlinux-L2:e1-2', 'srlinux-S2:e1-2']
