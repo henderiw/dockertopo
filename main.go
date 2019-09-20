@@ -615,7 +615,7 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 
 	if l.DeviceIDA > l.DeviceIDB {
 		log.Info("We should reverese the veth creation: first B than A")
-		if IntIdx == 0 {
+		if IntIdx == 1 {
 			log.Info("creating veth pair: ", l.Network.sideA, l.Network.sideB)
 			cmd := exec.Command("ip", "link", "add", l.Network.sideB, "type", l.Driver, "peer", "name", l.Network.sideA)
 			out, err := cmd.CombinedOutput()
