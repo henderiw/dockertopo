@@ -128,6 +128,7 @@ type volume struct {
 
 type device struct {
 	Name           string
+	DeviceIdx      int
 	Type           string
 	Image          string
 	Version        string
@@ -153,10 +154,11 @@ type device struct {
 	Detach          bool // true
 }
 
-func (d *device) init(name, t string, config topologyConfig) {
+func (d *device) init(name, t string, config topologyConfig, deviceIdx int) {
 	log.Info("Device Initialization")
 	// SRLINUX defaults
 	d.Name = config.Prefix + "_" + name
+	d.DeviceIdx = deviceIdx
 	d.Type = "srlinux"
 	d.Image = config.Image
 	v := strings.Split(config.Image, ":")
@@ -264,8 +266,9 @@ func (d *device) getConfig(t string, config topologyConfig) {
 
 }
 
-func (d *device) connect(intName string, l link, idx int) {
+func (d *device) connect(intName string, l link, idx, remoteDeviceID int) {
 	log.Info("Creating a pointer to network for interface", l.Name, intName)
+	l.RemoteDeviceIdx = remoteDeviceID
 	d.Interfaces[intName] = l
 	d.InterfacesIdx[intName] = idx
 	//log.Info("Interfaces:", d.Interfaces)
@@ -568,11 +571,12 @@ func (d *device) destroy() {
 }
 
 type link struct {
-	Name     string
-	LinkType string
-	Network  struct{ veth }
-	Opts     string
-	Driver   string
+	Name            string
+	LinkType        string
+	Network         struct{ veth }
+	Opts            string
+	Driver          string
+	RemoteDeviceIdx int
 }
 
 func (l *link) init(linkType, name, driver string, config topologyConfig) {
@@ -582,6 +586,7 @@ func (l *link) init(linkType, name, driver string, config topologyConfig) {
 	l.Network = struct{ veth }{}
 	l.Opts = ""
 	l.Driver = driver
+	l.RemoteDeviceIdx = 0
 
 	l.getOrCreate()
 
@@ -603,6 +608,9 @@ func (l *link) get() (network struct{ veth }) {
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
 
+	if d.DeviceIdx <
+
+	/*
 	if IntIdx == 0 {
 		log.Info("creating veth pair: ", l.Network.sideA, l.Network.sideB)
 		cmd := exec.Command("ip", "link", "add", l.Network.sideA, "type", l.Driver, "peer", "name", l.Network.sideB)
@@ -660,6 +668,7 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 		}
 		log.Info("combined out: \n", string(out))
 	}
+	*/
 }
 
 type veth struct {
@@ -678,6 +687,8 @@ func (v *veth) init(name string) {
 }
 
 func parseEndpoints(endpoints []string, link link, config topologyConfig) {
+	deviceIdxA = 0
+	deviceIdxB = 0
 	for idx, endpoint := range endpoints {
 		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
@@ -690,22 +701,39 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 
 		found := false
 		//log.Info("parseEndpoints Devices before for loop with found :", devices)
-		for _, d := range devices {
+		for didx, d := range devices {
 			//log.Info("parseEndpoints Device in for loop", d)
 			dn := config.Prefix + "_" + deviceName
 			if d.Name == dn {
 				found = true
 				device = d
+				if idx == 0 {
+					deviceIdxA = didx
+				} else {
+					deviceIdxB = didx
+				}
 				break
 			}
 		}
 		//log.Info("FOUND:", found)
 		if found == false {
-			device.init(deviceName, t, config)
+			device.init(deviceName, t, config, deviceIdx)
+			if idx == 0 {
+				deviceIdxA = deviceIdx
+			} else {
+				deviceIdxB = deviceIdx
+			}
+			deviceIdx++
 			//log.Info("parseEndpoints Device init:", device)
 		}
 
-		device.connect(intName, link, idx)
+		remoteDeviceID := 0
+		if idx == 0 {
+			remoteDeviceID = deviceIdxA
+		} else {
+			remoteDeviceID = deviceIdxB
+		}
+		device.connect(intName, link, idx, remoteDeviceID)
 		//log.Info("parseEndpoints Device connect:", device)
 
 		if found == false {
@@ -717,6 +745,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 }
 
 func parseTopology(t string, config topologyConfig) {
+	deviceIdx = 0
 	for idx, endpoint := range config.Links {
 		log.Info("Parsing Link:  ", endpoint)
 		linkDriver := config.Driver
@@ -757,6 +786,9 @@ var config topologyConfig
 var t string
 var links []link
 var devices []device
+var deviceIdx int
+var deviceIdxA int
+var deviceIdxB int
 
 const configDir = "./config/"
 const configJSONDir = "json_config/"
@@ -765,6 +797,7 @@ const testDockerNetIPv4Subnet = "172.19.19.0/24"
 const testDockerNetIPv6Subnet = "2001:172:19:19::1/80"
 
 func main() {
+
 	// Configure log formatting.
 	log.SetFormatter(&logutils.Formatter{})
 
@@ -792,6 +825,11 @@ func main() {
 		log.Info("/n########## Device ############/n")
 		log.Info("Device:", i, device)
 		log.Info("/n########## Device ############/n")
+		log.Info("/n########## Device ############/n")
+		log.Info("Device interface Idx:", i, device.InterfacesIdx)
+
+		log.Info("/n########## Device ############/n")
+
 	}
 	//log.Info("Links:", links)
 	for i, link := range links {
