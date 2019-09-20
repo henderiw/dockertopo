@@ -543,7 +543,9 @@ func (d *device) start() {
 		d.Pid = getContainerPid(d.Container)
 		log.Info("Container PID: ", d.Pid)
 		//d.Pid, _ = strconv.Unquote(d.Pid)
-		d.Pid = trimQuotes(d.Pid)
+		//d.Pid = trimQuotes(d.Pid)
+		d.Pid = strings.TrimSuffix(d.Pid, `'`)
+		d.Pid = strings.TrimPrefix(d.Pid, `'`)
 		for i := 1; i < len(d.Pid); i++ {
 			log.Info("Container PID: ", d.Pid[i])
 		}
