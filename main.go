@@ -140,6 +140,7 @@ type device struct {
 	Sysctls        map[string]string //  {'net.ipv4.ip_forward': 1}
 	EntryCmd       string            //'docker exec -it {} sh'.format(self.name)
 	Interfaces     map[string]link
+	InterfacesIdx  map[string]int
 	Mounts         map[string]volume
 	Volumes        map[string]struct{}
 	Binds          []string
@@ -175,6 +176,7 @@ func (d *device) init(name, t string, config topologyConfig) {
 	d.EntryCmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no admin@$(docker inspect {} --format '.format(self.name) + '\"{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}\")"
 	// Setting up extra variables
 	d.Interfaces = make(map[string]link)
+	d.InterfacesIdx = make(map[string]int)
 	d.Mounts = make(map[string]volume)
 	d.Volumes = make(map[string]struct{})
 	d.Binds = make([]string, 5)
@@ -262,9 +264,10 @@ func (d *device) getConfig(t string, config topologyConfig) {
 
 }
 
-func (d *device) connect(intName string, l link) {
+func (d *device) connect(intName string, l link, idx int) {
 	log.Info("Creating a pointer to network for interface", l.Name, intName)
 	d.Interfaces[intName] = l
+	d.InterfacesIdx[intName] = idx
 	//log.Info("Interfaces:", d.Interfaces)
 
 	d.updateStartMode(intName, l)
@@ -272,7 +275,8 @@ func (d *device) connect(intName string, l link) {
 
 func (d *device) attach() {
 	for name, link := range d.Interfaces {
-		log.Info("Attaching container {} interface {} to its link: ", name, link)
+		log.Info("Attaching container {} interface {} to its link: ", d.InterfacesIdx[name], name, link)
+		link.connect(d, d.InterfacesIdx[name], name)
 	}
 }
 
@@ -597,6 +601,31 @@ func (l *link) get() (network struct{ veth }) {
 
 }
 
+func (l *link) connect(d *device, IntIdx int, IntName string) {
+	cmd := exec.Command("ip", "link", "add", l.Network.sideA, "type", l.Driver, "peer", "name", l.Network.sideB)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out: \n", string(out))
+
+	if IntIdx == 0 {
+		cmd := exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+	} else {
+		cmd := exec.Command("ip", "link", "set", l.Network.sideB, "netns", d.Pid)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
+	}
+}
+
 type veth struct {
 	Name  string
 	sideA string
@@ -613,7 +642,7 @@ func (v *veth) init(name string) {
 }
 
 func parseEndpoints(endpoints []string, link link, config topologyConfig) {
-	for _, endpoint := range endpoints {
+	for idx, endpoint := range endpoints {
 		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
 		ep := strings.Split(endpoint, ":")
@@ -640,7 +669,7 @@ func parseEndpoints(endpoints []string, link link, config topologyConfig) {
 			//log.Info("parseEndpoints Device init:", device)
 		}
 
-		device.connect(intName, link)
+		device.connect(intName, link, idx)
 		//log.Info("parseEndpoints Device connect:", device)
 
 		if found == false {
