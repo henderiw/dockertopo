@@ -518,6 +518,15 @@ func (d *device) containerUnpause() {
 	}
 }
 
+func trimQuotes(s string) string {
+	if len(s) >= 2 {
+		if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'') {
+			return s[1 : len(s)-1]
+		}
+	}
+	return s
+}
+
 func (d *device) start() {
 	log.Info("Device Start")
 	log.Info("Device Container: ", d.Container)
@@ -533,7 +542,7 @@ func (d *device) start() {
 		d.containerStart()
 		d.Pid = getContainerPid(d.Container)
 		log.Info("Container PID: ", d.Pid)
-		d.Pid = strings.Trim(d.Pid, `'"`)
+		d.Pid = trimQuotes(d.Pid)
 		log.Info("Container PID after quote trim: ", d.Pid)
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
