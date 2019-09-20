@@ -89,6 +89,15 @@ func enableLLDP() {
 
 }
 
+func getContainerPid(containerID string) {
+	cmd := exec.Command("docker", "inspect", "--format", "'{{.State.Pid}}'", containerID)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("cmd.Run() failed with %s\n", err)
+	}
+	log.Info("combined out:\n%s\n", string(out))
+}
+
 type topologyConfig struct {
 	Version  string `yaml:"version"`
 	Driver   string `yaml:"driver"`
@@ -261,7 +270,7 @@ func (d *device) connect(intName string, l link) {
 
 func (d *device) attach() {
 	for name, link := range d.Interfaces {
-		log.Info("Attaching container {} interface {} to its link", name, link)
+		log.Info("Attaching container {} interface {} to its link: ", name, link)
 	}
 }
 
@@ -316,9 +325,11 @@ func (d *device) get(o string) (string, string) {
 		log.Info("Containers :", container.ID, container.Names, container.Labels)
 		log.Info("Container Name from docker api: ", container.Names[0])
 		log.Info("Container Name from device config: ", d.Name)
+
 		if container.Names[0] == "/"+d.Name {
 			log.Info("Container is already created or running: ", container.ID)
 			log.Info("Container status: ", container.Status)
+			getContainerPid(container.ID)
 			return container.ID, container.Status
 		}
 	}
