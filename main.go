@@ -89,14 +89,15 @@ func enableLLDP() {
 
 }
 
-func getContainerPid(containerID string) {
+func getContainerPid(containerID string) string {
 	log.Info("getting container PID: ", containerID)
 	cmd := exec.Command("docker", "inspect", "--format", `'{{.State.Pid}}'`, containerID)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
 	}
-	log.Info("combined out:\n%s\n", string(out))
+	log.Info("combined out: \n", string(out))
+	return string(out)
 }
 
 type topologyConfig struct {
@@ -331,7 +332,6 @@ func (d *device) get(o string) (string, string) {
 		if container.Names[0] == "/"+d.Name {
 			log.Info("Container is already created or running: ", container.ID)
 			log.Info("Container status: ", container.Status)
-			getContainerPid(container.ID)
 			return container.ID, container.Status
 		}
 	}
@@ -531,6 +531,8 @@ func (d *device) start() {
 	if d.StartMode == "manual" {
 		log.Info("Container %s to be started", d.Name)
 		d.containerStart()
+		d.Pid = getContainerPid(d.Container)
+		log.Info("Container PID: ", d.Pid)
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
 	}
