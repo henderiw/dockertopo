@@ -549,7 +549,7 @@ func (d *device) start() {
 		p := d.Pid[:len(d.Pid)-2]
 		log.Info("Container PID length: ", len(p))
 		log.Info("Container PID remove last character: ", p)
-		d.Pid = strings.TrimPrefix(p, `'`)
+		d.Pid = d.Pid[1:]
 		for i := 1; i < len(p); i++ {
 			log.Info("Container PID: ", p[i])
 		}
