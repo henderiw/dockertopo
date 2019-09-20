@@ -295,6 +295,7 @@ func (d *device) getOrCreate(o string) {
 	if d.Container == "" {
 		log.Info("Container info after get procedure:", d.Container)
 		d.create()
+		d.Container, d.ContainerStatus = d.get(o)
 	}
 
 }
