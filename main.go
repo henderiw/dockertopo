@@ -602,21 +602,24 @@ func (l *link) get() (network struct{ veth }) {
 }
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
-	cmd := exec.Command("ip", "link", "add", l.Network.sideA, "type", l.Driver, "peer", "name", l.Network.sideB)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatalf("cmd.Run() failed with %s\n", err)
-	}
-	log.Info("combined out: \n", string(out))
 
 	if IntIdx == 0 {
-		cmd := exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
+		log.Info("creating veth pair: ", l.Network.sideA, l.Network.sideB)
+		cmd := exec.Command("ip", "link", "add", l.Network.sideA, "type", l.Driver, "peer", "name", l.Network.sideB)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 		log.Info("combined out: \n", string(out))
+		log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, d.Pid)
+		cmd = exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
+		out, err = cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("cmd.Run() failed with %s\n", err)
+		}
+		log.Info("combined out: \n", string(out))
 	} else {
+		log.Info("Attaching veth pair to container with pid: ", l.Network.sideB, d.Pid)
 		cmd := exec.Command("ip", "link", "set", l.Network.sideB, "netns", d.Pid)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
