@@ -590,8 +590,10 @@ func (l *link) getOrCreate() {
 
 func (l *link) get() (network struct{ veth }) {
 	log.Info("Trying to find an existing network with name:", l.Name)
-	var veth veth
-	return veth.init(l.Name)
+	var v veth
+	v.init(l.Name)
+	network = struct{ veth }{v}
+	return
 
 }
 
@@ -601,13 +603,12 @@ type veth struct {
 	sideB string
 }
 
-func (v *veth) init(name string) (network struct{ veth }) {
+func (v *veth) init(name string) {
 	log.Info("Initializing a veth pair: ", name)
 	v.Name = name
 	v.sideA = name + "-a"
 	v.sideB = name + "-b"
-
-	return network
+	log.Info("Veth pair: ", v)
 
 }
 
