@@ -90,7 +90,7 @@ func enableLLDP() {
 }
 
 func getContainerPid(containerID string) {
-	log.Info("getting container PID: %s\n", containerID)
+	log.Info("getting container PID: ", containerID)
 	cmd := exec.Command("docker", "inspect", "--format", `'{{.State.Pid}}'`, containerID)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -439,6 +439,7 @@ func (d *device) create() {
 func (d *device) containerStart() {
 	log.Info("Container Start")
 	log.Info("Container Name:", d.Name)
+	log.Info("Container ID:", d.Container)
 
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
