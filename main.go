@@ -545,13 +545,18 @@ func (d *device) start() {
 		//d.Pid, _ = strconv.Unquote(d.Pid)
 		//d.Pid = trimQuotes(d.Pid)
 		//d.Pid = strings.TrimSuffix(d.Pid, `'`)
-		d.Pid = d.Pid[:len(d.Pid)-1]
-		log.Info("Container PID remove last character: ", d.Pid)
-		d.Pid = strings.TrimPrefix(d.Pid, `'`)
-		for i := 1; i < len(d.Pid); i++ {
-			log.Info("Container PID: ", d.Pid[i])
+		log.Info("Container PID length: ", len(d.Pid))
+		p := d.Pid[:len(d.Pid)-1]
+		log.Info("Container PID length: ", len(p))
+		log.Info("Container PID remove last character: ", p)
+		d.Pid = strings.TrimPrefix(p, `'`)
+		for i := 1; i < len(p); i++ {
+			log.Info("Container PID: ", p[i])
 		}
+		d.Pid = p
 		log.Info("Container PID after quote trim: ", d.Pid)
+		log.Info("Container PID length: ", len(p))
+		log.Info("Container PID length: ", len(d.Pid))
 	} else {
 		log.Info("Unsupported container start mode %s", d.StartMode)
 	}
