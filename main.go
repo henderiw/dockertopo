@@ -269,7 +269,7 @@ func (d *device) connect(intName string, l link, idx, deviceIDA, deviceIDB int) 
 
 func (d *device) attach() {
 	for name, link := range d.Interfaces {
-		log.Info("Attaching container {} interface {} to its link: ", d.InterfacesIdx[name], name, link)
+		log.Info("Attaching container: ", d.InterfacesIdx[name], " interface ", name, " to its link: ", link)
 		link.connect(d, d.InterfacesIdx[name], name)
 	}
 }
@@ -604,7 +604,7 @@ func (l *link) get() (network struct{ veth }) {
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
 	log.Info("Link Connect VETH pair")
-	log.Info("DeviceName:", d.Name, " DeviceID: ", d.DeviceID, " Remote device IdA: ", l.DeviceIDA, " Remote device IdB: ", l.DeviceIDB)
+	log.Info("DeviceName: ", d.Name, " DeviceID: ", d.DeviceID, " Remote device IdA: ", l.DeviceIDA, " Remote device IdB: ", l.DeviceIDB)
 
 	if l.DeviceIDA > l.DeviceIDB {
 		log.Info("We should reverese the veth creation: first B than A")
@@ -641,7 +641,7 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 			}
 			log.Info("combined out: \n", string(out))
 		} else {
-			log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, d.Pid)
+			log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, " ", d.Pid)
 			cmd := exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
