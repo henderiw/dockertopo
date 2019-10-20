@@ -740,7 +740,7 @@ func (v *veth) init(name string) {
 
 }
 
-func parseEndpoints(endpoints []string, link link, config topologyConfig) {
+func parseEndpoints(t string, endpoints []string, link link, config topologyConfig) {
 	deviceIDA = 0
 	deviceIDB = 0
 	for idx, endpoint := range endpoints {
@@ -818,7 +818,7 @@ func parseTopology(t string, config topologyConfig) {
 		link.init(linkType, "net-"+strconv.Itoa(idx), linkDriver, config)
 		links = append(links, link)
 		//log.Info("Links", links)
-		parseEndpoints(endpoint.EndPoints, link, config)
+		parseEndpoints(t, endpoint.EndPoints, link, config)
 
 	}
 }
