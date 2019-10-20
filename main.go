@@ -240,10 +240,10 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	d.Mounts["checkPoint"] = v
 
 	d.Volumes = map[string]struct{}{
-		d.Mounts["license"].destination:    struct{}{},
-		d.Mounts["startup"].destination:    struct{}{},
 		d.Mounts["envConf"].destination:    struct{}{},
 		d.Mounts["checkPoint"].destination: struct{}{},
+		d.Mounts["license"].destination:    struct{}{},
+		d.Mounts["startup"].destination:    struct{}{},
 	}
 
 	bindLicense := d.Mounts["license"].source + ":" + d.Mounts["license"].destination + ":" + "ro"
@@ -251,7 +251,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	bindEnvConf := d.Mounts["envConf"].source + ":" + d.Mounts["envConf"].destination + ":" + "rw"
 	bindCheckPoint := d.Mounts["checkPoint"].source + ":" + d.Mounts["checkPoint"].destination + ":" + "rw"
 
-	d.Binds = []string{bindLicense, bindStartup, bindEnvConf, bindCheckPoint}
+	d.Binds = []string{bindEnvConf, bindCheckPoint, bindLicense, bindStartup}
 
 }
 
