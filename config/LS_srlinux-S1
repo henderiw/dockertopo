@@ -2,16 +2,16 @@
   "_preamble": {
     "header": {
       "generated-by": "SRLINUX",
-      "name": "checkpoint-2019-08-26T18:51:16.701Z",
+      "name": "checkpoint-2019-10-03T00:41:43.058Z",
       "comment": "",
-      "created": "2019-08-26T18:51:16.703Z",
-      "release": "v0.5.0",
-      "checksum": "54b07f1e12170811$294c5461ba23a625859d2e741d07ca883b3b27bc"
+      "created": "2019-10-03T00:41:43.060Z",
+      "release": "v0.6.0",
+      "checksum": "9dfc6fa8d0810a5d$8513e43b75f5c2b6f5d04a18d2cc897f39cc6a4a"
     },
     "build": {
       "git-branch": "",
-      "git-tag": "v0.5.0-190-ge8f1dd8",
-      "git-sha": "e8f1dd847e142c5d900cca8e2aa4ba15507beb88"
+      "git-tag": "v0.6.0-201-g9a2d6bc",
+      "git-sha": "9a2d6bcfbdd8fd15f24b1a3e74e555f977d3ae5b"
     },
     "application": [
       {
@@ -22,87 +22,87 @@
       {
         "name": "aaa_mgr",
         "path": "/opt/srlinux/bin/sr_aaa_mgr",
-        "version": "2019-08-24T15:08:00.000Z"
+        "version": "2019-10-01T19:07:34.000Z"
       },
       {
         "name": "acl_mgr",
         "path": "/opt/srlinux/bin/sr_acl_mgr",
-        "version": "2019-08-24T15:12:40.000Z"
+        "version": "2019-10-01T19:11:50.000Z"
       },
       {
         "name": "app_mgr",
         "path": "/opt/srlinux/bin/sr_app_mgr",
-        "version": "2019-08-24T15:07:45.000Z"
+        "version": "2019-10-01T19:05:58.000Z"
       },
       {
         "name": "arp_nd_mgr",
         "path": "/opt/srlinux/bin/sr_arp_nd_mgr",
-        "version": "2019-08-24T15:07:13.000Z"
+        "version": "2019-10-01T19:11:42.000Z"
       },
       {
         "name": "bfd_mgr",
         "path": "/opt/srlinux/bin/sr_bfd_mgr",
-        "version": "2019-08-24T15:12:06.000Z"
+        "version": "2019-10-01T19:11:51.000Z"
       },
       {
         "name": "bgp_mgr",
         "path": "/opt/srlinux/bin/sr_bgp_mgr",
-        "version": "2019-08-24T15:12:46.000Z"
+        "version": "2019-10-01T19:12:29.000Z"
       },
       {
         "name": "chassis_mgr",
         "path": "/opt/srlinux/bin/sr_chassis_mgr",
-        "version": "2019-08-24T15:08:01.000Z"
+        "version": "2019-10-01T19:08:05.000Z"
       },
       {
         "name": "dev_mgr",
         "path": "/opt/srlinux/bin/sr_device_mgr",
-        "version": "2019-08-24T15:06:45.000Z"
+        "version": "2019-10-01T19:11:25.000Z"
       },
       {
         "name": "dhcp_client_mgr",
         "path": "/opt/srlinux/bin/sr_dhcp_client_mgr",
-        "version": "2019-08-24T15:11:12.000Z"
+        "version": "2019-10-01T19:09:16.000Z"
       },
       {
         "name": "fib_mgr",
         "path": "/opt/srlinux/bin/sr_fib_mgr",
-        "version": "2019-08-24T15:12:05.000Z"
+        "version": "2019-10-01T19:11:44.000Z"
       },
       {
         "name": "gnmi_server",
         "path": "/opt/srlinux/bin/sr_gnmi_server",
-        "version": "2019-08-24T15:12:12.000Z"
+        "version": "2019-10-01T19:12:00.000Z"
       },
       {
         "name": "idb_server",
         "path": "/opt/srlinux/bin/sr_idb_server",
-        "version": "2019-08-24T15:04:07.000Z"
+        "version": "2019-10-01T19:02:55.000Z"
       },
       {
         "name": "json_rpc",
         "path": "/opt/srlinux/bin/sr_json_rpc",
-        "version": "2019-08-24T15:12:00.000Z"
+        "version": "2019-10-01T19:11:58.000Z"
       },
       {
         "name": "linux_mgr",
         "path": "/opt/srlinux/bin/sr_linux_mgr",
-        "version": "2019-08-24T15:12:54.000Z"
+        "version": "2019-10-01T19:12:29.000Z"
       },
       {
         "name": "dnsmasq",
         "path": "/usr/sbin/dnsmasq",
-        "version": "2018-10-30T17:05:20.000Z"
+        "version": "2019-08-08T23:12:09.000Z"
       },
       {
         "name": "sshd",
         "path": "/usr/sbin/sshd",
-        "version": "2018-04-11T04:21:32.000Z"
+        "version": "2019-08-09T01:40:47.000Z"
       },
       {
         "name": "ntpd",
         "path": "/usr/sbin/ntpd",
-        "version": "2018-04-13T12:52:34.000Z"
+        "version": "2019-08-08T11:48:11.000Z"
       },
       {
         "name": "vsftpd",
@@ -112,22 +112,22 @@
       {
         "name": "snmpd",
         "path": "/usr/sbin/snmpd",
-        "version": "2018-10-30T23:53:02.000Z"
+        "version": "2019-08-19T22:23:58.000Z"
       },
       {
         "name": "lldp_mgr",
         "path": "/opt/srlinux/bin/sr_lldp_mgr",
-        "version": "2019-08-24T15:12:14.000Z"
+        "version": "2019-10-01T19:11:47.000Z"
       },
       {
         "name": "log_mgr",
         "path": "/opt/srlinux/bin/sr_log_mgr",
-        "version": "2019-08-24T15:07:42.000Z"
+        "version": "2019-10-01T19:06:26.000Z"
       },
       {
         "name": "mgmt_server",
         "path": "/opt/srlinux/bin/sr_mgmt_server",
-        "version": "2019-08-24T15:08:31.000Z"
+        "version": "2019-10-01T19:08:27.000Z"
       },
       {
         "name": "common",
@@ -137,17 +137,22 @@
       {
         "name": "mpls_mgr",
         "path": "/opt/srlinux/bin/sr_mpls_mgr",
-        "version": "2019-08-24T15:10:43.000Z"
+        "version": "2019-10-01T19:10:52.000Z"
       },
       {
         "name": "net_inst_mgr",
         "path": "/opt/srlinux/bin/sr_net_inst_mgr",
-        "version": "2019-08-24T15:07:43.000Z"
+        "version": "2019-10-01T19:05:47.000Z"
+      },
+      {
+        "name": "oam_mgr",
+        "path": "/opt/srlinux/bin/sr_oam_mgr",
+        "version": "2019-10-01T19:04:52.000Z"
       },
       {
         "name": "plcy_mgr",
         "path": "/opt/srlinux/bin/sr_plcy_mgr",
-        "version": "2019-08-24T15:07:50.000Z"
+        "version": "2019-10-01T19:12:11.000Z"
       },
       {
         "name": "maint_mode_mgr",
@@ -157,32 +162,32 @@
       {
         "name": "qos_mgr",
         "path": "/opt/srlinux/bin/sr_qos_mgr",
-        "version": "2019-08-24T15:11:09.000Z"
+        "version": "2019-10-01T19:11:21.000Z"
       },
       {
         "name": "sdk_mgr",
         "path": "/opt/srlinux/bin/sr_sdk_mgr",
-        "version": "2019-08-24T15:11:17.000Z"
+        "version": "2019-10-01T19:12:30.000Z"
       },
       {
         "name": "static_route_mgr",
         "path": "/opt/srlinux/bin/sr_static_route_mgr",
-        "version": "2019-08-24T15:10:51.000Z"
+        "version": "2019-10-01T19:10:57.000Z"
       },
       {
         "name": "supportd",
         "path": "/opt/srlinux/bin/sr_supportd",
-        "version": "2019-08-24T15:03:10.000Z"
+        "version": "2019-10-01T19:02:19.000Z"
       },
       {
         "name": "xdp_cpm",
         "path": "/opt/srlinux/bin/sr_xdp_cpm",
-        "version": "2019-08-24T15:11:52.000Z"
+        "version": "2019-10-01T19:12:00.000Z"
       },
       {
         "name": "xdp_lc",
         "path": "/opt/srlinux/bin/sr_xdp_lc",
-        "version": "2019-08-24T15:12:18.000Z"
+        "version": "2019-10-01T19:12:15.000Z"
       }
     ],
     "yang-module": [
@@ -215,6 +220,10 @@
         "revision": "2018-05-23"
       },
       {
+        "name": "srl_nokia-boot",
+        "revision": "2019-01-21"
+      },
+      {
         "name": "srl_nokia-configuration",
         "revision": "2019-01-21"
       },
@@ -241,6 +250,10 @@
       {
         "name": "srl_nokia-interfaces",
         "revision": "2018-05-07"
+      },
+      {
+        "name": "srl_nokia-interfaces-ip-dhcp",
+        "revision": "2019-07-02"
       },
       {
         "name": "srl_nokia-interfaces-nbr",
@@ -434,10 +447,12 @@
           "index": 0,
           "admin-state": "enable",
           "ipv4": {
-            "dhcp-client": true
+            "srl_nokia-interfaces-ip-dhcp:dhcp-client": {
+            }
           },
           "ipv6": {
-            "dhcp-client": true
+            "srl_nokia-interfaces-ip-dhcp:dhcp-client": {
+            }
           }
         }
       ]
@@ -463,9 +478,6 @@
           "name": "local"
         }
       ]
-    },
-    "srl_nokia-system-name:name": {
-      "host-name": "leaf-spine-srlinux-S1"
     },
     "srl_nokia-gnmi-server:gnmi-server": {
       "admin-state": "enable",
