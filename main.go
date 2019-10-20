@@ -544,7 +544,7 @@ func (d *device) start() {
 	}
 	d.update()
 	//d.containerPause()
-	//d.attach()
+	d.attach()
 	//d.containerUnpause()
 
 }
