@@ -439,6 +439,77 @@
   },
   "srl_nokia-interfaces:interface": [
     {
+      "name": "ethernet-1/1",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "192.168.11.1/30"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001:1::192:168:11:1/126"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "ethernet-1/2",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "192.168.12.1/30"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001:1::192:168:12:1/126"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "lo0",
+      "admin-state": "enable",
+      "subinterface": [
+        {
+          "index": 1,
+          "admin-state": "enable",
+          "ipv4": {
+            "address": [
+              {
+                "ip-prefix": "100.1.1.1/32"
+              }
+            ]
+          },
+          "ipv6": {
+            "address": [
+              {
+                "ip-prefix": "2001::100:1:1:1/128"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "name": "mgmt0",
       "admin-state": "enable",
       "mtu": 1500,
@@ -695,6 +766,184 @@
   },
   "srl_nokia-network-instance:network-instance": [
     {
+      "name": "default",
+      "type": "srl_nokia-network-instance:ip-vrf",
+      "admin-state": "enable",
+      "interface": [
+        {
+          "name": "ethernet-1/1.1"
+        },
+        {
+          "name": "ethernet-1/2.1"
+        },
+        {
+          "name": "lo0.1"
+        }
+      ],
+      "protocols": {
+        "srl_nokia-bgp:bgp": {
+          "autonomous-system": 65001,
+          "router-id": "1.1.1.1",
+          "ebgp-default-policy": {
+            "import-reject-all": false,
+            "export-reject-all": true
+          },
+          "group": [
+            {
+              "group-name": "test",
+              "admin-state": "enable",
+              "traceoptions": {
+                "flag": [
+                  {
+                    "name": "events"
+                  },
+                  {
+                    "name": "graceful-restart"
+                  },
+                  {
+                    "name": "keepalive"
+                  },
+                  {
+                    "name": "notification"
+                  },
+                  {
+                    "name": "open"
+                  },
+                  {
+                    "name": "packets"
+                  },
+                  {
+                    "name": "route"
+                  },
+                  {
+                    "name": "socket"
+                  },
+                  {
+                    "name": "timers"
+                  },
+                  {
+                    "name": "update"
+                  }
+                ]
+              }
+            }
+          ],
+          "ipv4-unicast": {
+            "admin-state": "enable",
+            "multipath": {
+              "allow-multiple-as": true
+            }
+          },
+          "ipv6-unicast": {
+            "admin-state": "enable",
+            "multipath": {
+              "allow-multiple-as": true
+            }
+          },
+          "neighbor": [
+            {
+              "peer-address": "192.168.11.2",
+              "description": "default network-instance bgp neighbor to Node B",
+              "export-policy": "bgp-export-policy",
+              "peer-as": 65002,
+              "peer-group": "test",
+              "failure-detection": {
+                "fast-failover": true
+              },
+              "local-as": [
+                {
+                  "as-number": 65001
+                }
+              ]
+            },
+            {
+              "peer-address": "192.168.12.2",
+              "description": "default network-instance bgp neighbor to Node C",
+              "export-policy": "bgp-export-policy",
+              "peer-as": 65003,
+              "peer-group": "test",
+              "failure-detection": {
+                "fast-failover": true
+              },
+              "local-as": [
+                {
+                  "as-number": 65001
+                }
+              ]
+            },
+            {
+              "peer-address": "2001:1::192:168:11:2",
+              "description": "default network-instance bgp neighbor to Node B",
+              "export-policy": "bgp-export-policy-v6",
+              "peer-as": 65002,
+              "peer-group": "test",
+              "failure-detection": {
+                "fast-failover": true
+              },
+              "local-as": [
+                {
+                  "as-number": 65001
+                }
+              ]
+            },
+            {
+              "peer-address": "2001:1::192:168:12:2",
+              "description": "default network-instance bgp neighbor to Node C",
+              "export-policy": "bgp-export-policy-v6",
+              "peer-as": 65003,
+              "peer-group": "test",
+              "failure-detection": {
+                "fast-failover": true
+              },
+              "local-as": [
+                {
+                  "as-number": 65001
+                }
+              ]
+            }
+          ]
+        },
+        "srl_nokia-linux:linux": {
+          "export-routes": true,
+          "export-neighbors": true
+        }
+      },
+      "srl_nokia-static-routes:static-routes": {
+        "route": [
+          {
+            "prefix": "192.168.16.0/24",
+            "admin-state": "enable",
+            "metric": 1,
+            "preference": 5,
+            "next-hop-group": "static-ipv4-grp"
+          },
+          {
+            "prefix": "2001:1::192:168:16:0/64",
+            "admin-state": "enable",
+            "metric": 1,
+            "preference": 6,
+            "next-hop-group": "static-ipv6-grp"
+          }
+        ]
+      },
+      "srl_nokia-next-hop-groups:next-hop-groups": {
+        "group": [
+          {
+            "name": "static-ipv4-grp",
+            "admin-state": "enable",
+            "blackhole": {
+            }
+          },
+          {
+            "name": "static-ipv6-grp",
+            "admin-state": "enable",
+            "blackhole": {
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "mgmt",
       "type": "srl_nokia-network-instance:ip-vrf",
       "admin-state": "enable",
@@ -711,5 +960,33 @@
         }
       }
     }
-  ]
+  ],
+  "srl_nokia-routing-policy:routing-policy": {
+    "policy": [
+      {
+        "name": "bgp-export-policy",
+        "statement": [
+          {
+            "sequence-id": 999,
+            "action": {
+              "accept": {
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "bgp-export-policy-v6",
+        "statement": [
+          {
+            "sequence-id": 999,
+            "action": {
+              "accept": {
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
