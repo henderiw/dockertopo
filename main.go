@@ -603,8 +603,8 @@ func (l *link) get() (network struct{ veth }) {
 }
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
-
-	log.Info("DeviceID: ", d.DeviceID, " Remote device IdA: ", l.DeviceIDA, " Remote device IdB: ", l.DeviceIDB)
+	log.Info("Link Connect VETH pair")
+	log.Info("DeviceName:", d.Name, " DeviceID: ", d.DeviceID, " Remote device IdA: ", l.DeviceIDA, " Remote device IdB: ", l.DeviceIDB)
 
 	if l.DeviceIDA > l.DeviceIDB {
 		log.Info("We should reverese the veth creation: first B than A")
