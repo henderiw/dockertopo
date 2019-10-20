@@ -544,11 +544,13 @@ func (d *device) start(mode string) {
 	}
 	d.update()
 
-	if mode == "attach" {
-		//d.containerPause()
-		d.attach()
-		//d.containerUnpause()
-	}
+	//d.containerPause()
+	d.attach()
+	//d.containerUnpause()
+
+	//if mode == "attach" {
+	//
+	//}
 
 }
 
@@ -604,7 +606,7 @@ func (l *link) get() (network struct{ veth }) {
 
 func (l *link) connect(d *device, IntIdx int, IntName string) {
 
-	log.Info("DeviceID: ", d.DeviceID, "Remote device IdA: ", l.DeviceIDA, "Remote device IdB: ", l.DeviceIDB)
+	log.Info("DeviceID: ", d.DeviceID, " Remote device IdA: ", l.DeviceIDA, " Remote device IdB: ", l.DeviceIDB)
 
 	if l.DeviceIDA > l.DeviceIDB {
 		log.Info("We should reverese the veth creation: first B than A")
@@ -668,7 +670,7 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 	} else {
 		log.Info("Normal veth creation")
 		if IntIdx == 0 {
-			log.Info("creating veth pair: ", l.Network.sideA, l.Network.sideB)
+			log.Info("creating veth pair: ", l.Network.sideA, " ", l.Network.sideB)
 			cmd := exec.Command("ip", "link", "add", l.Network.sideA, "type", l.Driver, "peer", "name", l.Network.sideB)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
@@ -904,9 +906,9 @@ func main() {
 			device.start("start")
 		}
 
-		for _, device := range devices {
-			device.start("attach")
-		}
+		//for _, device := range devices {
+		//	device.start("attach")
+		//}
 
 		//disable chacksum offload on docker0, sr-linux bridge
 		disableCheckSumoffload(testDockerNet)
