@@ -544,13 +544,11 @@ func (d *device) start(mode string) {
 	}
 	d.update()
 
-	//d.containerPause()
-	d.attach()
-	//d.containerUnpause()
-
-	//if mode == "attach" {
-	//
-	//}
+	if mode == "attach" {
+		//d.containerPause()
+		d.attach()
+		//d.containerUnpause()
+	}
 
 }
 
@@ -906,9 +904,9 @@ func main() {
 			device.start("start")
 		}
 
-		//for _, device := range devices {
-		//	device.start("attach")
-		//}
+		for _, device := range devices {
+			device.start("attach")
+		}
 
 		//disable chacksum offload on docker0, sr-linux bridge
 		disableCheckSumoffload(testDockerNet)
