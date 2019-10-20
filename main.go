@@ -157,7 +157,7 @@ type device struct {
 func (d *device) init(name, t string, config topologyConfig, deviceID int) {
 	log.Info("Device Initialization")
 	// SRLINUX defaults
-	d.Name = config.Prefix + "_" + name
+	d.Name = config.Prefix + "-" + name
 	d.DeviceID = deviceID
 	d.Type = "srlinux"
 	d.Image = config.Image
@@ -240,10 +240,10 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	d.Mounts["checkPoint"] = v
 
 	d.Volumes = map[string]struct{}{
-		d.Mounts["envConf"].destination:    struct{}{},
-		d.Mounts["checkPoint"].destination: struct{}{},
 		d.Mounts["license"].destination:    struct{}{},
 		d.Mounts["startup"].destination:    struct{}{},
+		d.Mounts["envConf"].destination:    struct{}{},
+		d.Mounts["checkPoint"].destination: struct{}{},
 	}
 
 	bindLicense := d.Mounts["license"].source + ":" + d.Mounts["license"].destination + ":" + "ro"
@@ -251,7 +251,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	bindEnvConf := d.Mounts["envConf"].source + ":" + d.Mounts["envConf"].destination + ":" + "rw"
 	bindCheckPoint := d.Mounts["checkPoint"].source + ":" + d.Mounts["checkPoint"].destination + ":" + "rw"
 
-	d.Binds = []string{bindEnvConf, bindCheckPoint, bindLicense, bindStartup}
+	d.Binds = []string{bindLicense, bindStartup, bindEnvConf, bindCheckPoint}
 
 }
 
