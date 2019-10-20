@@ -232,7 +232,7 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	v.readOnly = true
 	d.Mounts["license"] = v
 	v.source = startup
-	v.destination = "git/etc/opt/srlinux/config.json"
+	v.destination = "/etc/opt/srlinux/config.json"
 	v.readOnly = false
 	d.Mounts["startup"] = v
 	v.source = topologyYAML
