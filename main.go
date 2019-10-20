@@ -516,7 +516,7 @@ func (d *device) containerUnpause() {
 	}
 }
 
-func (d *device) start() {
+func (d *device) start(mode string) {
 	log.Info("Device Start")
 	log.Info("Device Container: ", d.Container)
 	if d.Container == "" {
@@ -543,9 +543,12 @@ func (d *device) start() {
 		log.Info("Unsupported container start mode: ", d.StartMode)
 	}
 	d.update()
-	//d.containerPause()
-	d.attach()
-	//d.containerUnpause()
+
+	if mode == "attach" {
+		//d.containerPause()
+		d.attach()
+		//d.containerUnpause()
+	}
 
 }
 
@@ -898,7 +901,11 @@ func main() {
 		createDockerBridge()
 
 		for _, device := range devices {
-			device.start()
+			device.start("start")
+		}
+
+		for _, device := range devices {
+			device.start("attach")
 		}
 
 		//disable chacksum offload on docker0, sr-linux bridge
