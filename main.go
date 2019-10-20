@@ -208,10 +208,6 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	if err == nil {
 		log.Info("Absolute startup path:", startup)
 	}
-	//topologyYAML, err = filepath.Abs(topologyYAML)
-	//if err == nil {
-	//	log.Info("Absolute topologyYAML path:", topologyYAML)
-	//}
 	envConf, err = filepath.Abs(envConf)
 	if err == nil {
 		log.Info("Absolute envConf path:", envConf)
@@ -222,7 +218,6 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	}
 	log.Info(path.IsAbs(license))
 	log.Info(path.IsAbs(startup))
-	//log.Info(path.IsAbs(topologyYAML))
 	log.Info(path.IsAbs(envConf))
 	log.Info(path.IsAbs(checkPoint))
 
@@ -235,10 +230,6 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	v.destination = "/etc/opt/srlinux/config.json"
 	v.readOnly = false
 	d.Mounts["startup"] = v
-	//v.source = topologyYAML
-	//v.destination = "/tmp/topology.yml"
-	//v.readOnly = true
-	//d.Mounts["topologyYAML"] = v
 	v.source = envConf
 	v.destination = "/home/admin/.srlinux.conf"
 	v.readOnly = false
@@ -249,16 +240,14 @@ func (d *device) getConfig(t string, config topologyConfig) {
 	d.Mounts["checkPoint"] = v
 
 	d.Volumes = map[string]struct{}{
-		d.Mounts["license"].destination:      struct{}{},
-		d.Mounts["startup"].destination:      struct{}{},
-		d.Mounts["topologyYAML"].destination: struct{}{},
-		d.Mounts["envConf"].destination:      struct{}{},
-		d.Mounts["checkPoint"].destination:   struct{}{},
+		d.Mounts["license"].destination:    struct{}{},
+		d.Mounts["startup"].destination:    struct{}{},
+		d.Mounts["envConf"].destination:    struct{}{},
+		d.Mounts["checkPoint"].destination: struct{}{},
 	}
 
 	bindLicense := d.Mounts["license"].source + ":" + d.Mounts["license"].destination + ":" + "ro"
 	bindStartup := d.Mounts["startup"].source + ":" + d.Mounts["startup"].destination + ":" + "rw"
-	//bindTopologyYAML := d.Mounts["topologyYAML"].source + ":" + d.Mounts["topologyYAML"].destination + ":" + "ro"
 	bindEnvConf := d.Mounts["envConf"].source + ":" + d.Mounts["envConf"].destination + ":" + "rw"
 	bindCheckPoint := d.Mounts["checkPoint"].source + ":" + d.Mounts["checkPoint"].destination + ":" + "rw"
 
