@@ -752,11 +752,11 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
 		ep := strings.Split(endpoint, ":")
-		//log.Info("EP:  ", ep)
+		log.Info("EP:  ", ep)
 		deviceName := ep[0]
-		//log.Info("DEVICE NAME:  ", deviceName)
+		log.Info("DEVICE NAME:  ", deviceName)
 		intName := ep[1]
-		//log.Info("INTERFACE NAME:  ", intName)
+		log.Info("INTERFACE NAME:  ", intName)
 
 		found := false
 		//log.Info("parseEndpoints Devices before for loop with found :", devices)
@@ -786,7 +786,7 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 			//log.Info("parseEndpoints Device init:", device)
 		}
 
-		log.Info("Device Link Connection:", "Link: ", link, "Device A: ", deviceIDA, "Device B: ", deviceIDB)
+		log.Info("Device Link Connection: ", deviceName, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
 		device.connect(intName, link, idx, deviceIDA, deviceIDB)
 		//log.Info("parseEndpoints Device connect:", device)
 
