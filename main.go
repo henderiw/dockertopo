@@ -762,7 +762,8 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 		//log.Info("parseEndpoints Devices before for loop with found :", devices)
 		for didx, d := range devices {
 			//log.Info("parseEndpoints Device in for loop", d)
-			dn := config.Prefix + "_" + deviceName
+			dn := config.Prefix + "-" + deviceName
+			log.Info("dn: ", dn, " d.Name:  ", d.Name)
 			if d.Name == dn {
 				found = true
 				log.Info("FOUND: ", found)
