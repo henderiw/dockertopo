@@ -765,6 +765,7 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 			dn := config.Prefix + "_" + deviceName
 			if d.Name == dn {
 				found = true
+				log.Info("FOUND: ", found)
 				device = d
 				if idx == 0 {
 					deviceIDA = didx
@@ -773,6 +774,7 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 				}
 				break
 			}
+			log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
 		}
 		//log.Info("FOUND:", found)
 		if found == false {
@@ -784,8 +786,10 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 			}
 			deviceID++
 			//log.Info("parseEndpoints Device init:", device)
+			log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
 		}
 
+		log.Info("deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
 		log.Info("Device Link Connection: ", deviceName, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
 		device.connect(intName, link, idx, deviceIDA, deviceIDB)
 		//log.Info("parseEndpoints Device connect:", device)
