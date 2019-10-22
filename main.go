@@ -748,6 +748,23 @@ func (v *veth) init(name string) {
 func parseEndpoints(t string, endpoints []string, link link, config topologyConfig) {
 	deviceIDA = 0
 	deviceIDB = 0
+
+	endpoint0 := endpoints[0]
+	log.Info("Parsing Endpoints:  ", endpoint0)
+	ep0 := strings.Split(endpoint0, ":")
+	log.Info("EP0:  ", ep0)
+	deviceName0 := ep0[0]
+	log.Info("DEVICE NAME EP0:  ", deviceName0)
+	intName0 := ep0[1]
+	log.Info("INTERFACE NAME EP0:  ", intName0)
+	endpoint1 := endpoints[1]
+	ep1 := strings.Split(endpoint1, ":")
+	log.Info("EP1:  ", ep1)
+	deviceName1 := ep1[0]
+	log.Info("DEVICE NAME EP1:  ", deviceName1)
+	intName1 := ep1[1]
+	log.Info("INTERFACE NAME EP1:  ", intName1)
+
 	for idx, endpoint := range endpoints {
 		log.Info("Parsing Endpoints:  ", endpoint)
 		var device device
