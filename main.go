@@ -807,7 +807,7 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 			dn := config.Prefix + "-" + deviceName1
 			log.Info("dn: ", dn, " d.Name:  ", d.Name)
 			if d.Name == dn {
-				found0 = true
+				found1 = true
 				log.Info("FOUND1: ", found1)
 				if i == 1 {
 					device = d
