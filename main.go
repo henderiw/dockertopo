@@ -187,6 +187,7 @@ func (d *device) init(name, t string, config topologyConfig, deviceID int) {
 	// Pointer to docker SDK object
 	d.Container = ""
 	d.ContainerStatus = ""
+	d.StartMode = "manual"
 
 	d.getConfig(t, config)
 
