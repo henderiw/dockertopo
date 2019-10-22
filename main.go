@@ -786,6 +786,9 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 				deviceIDB = deviceID
 			}
 			deviceID++
+			if deviceIDA == deviceIDB {
+				deviceIDB = deviceID
+			}
 			//log.Info("parseEndpoints Device init:", device)
 			log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
 		}
