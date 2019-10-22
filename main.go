@@ -749,6 +749,8 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 	deviceIDA = 0
 	deviceIDB = 0
 
+	var device device
+
 	endpoint0 := endpoints[0]
 	log.Info("Parsing Endpoints:  ", endpoint0)
 	ep0 := strings.Split(endpoint0, ":")
@@ -765,62 +767,141 @@ func parseEndpoints(t string, endpoints []string, link link, config topologyConf
 	intName1 := ep1[1]
 	log.Info("INTERFACE NAME EP1:  ", intName1)
 
-	for idx, endpoint := range endpoints {
-		log.Info("Parsing Endpoints:  ", endpoint)
-		var device device
-		ep := strings.Split(endpoint, ":")
-		log.Info("EP:  ", ep)
-		deviceName := ep[0]
-		log.Info("DEVICE NAME:  ", deviceName)
-		intName := ep[1]
-		log.Info("INTERFACE NAME:  ", intName)
-
-		found := false
+	for i := 0; i < 2; i++ {
+		found0 := false
 		//log.Info("parseEndpoints Devices before for loop with found :", devices)
 		for didx, d := range devices {
 			//log.Info("parseEndpoints Device in for loop", d)
-			dn := config.Prefix + "-" + deviceName
+			dn := config.Prefix + "-" + deviceName0
 			log.Info("dn: ", dn, " d.Name:  ", d.Name)
 			if d.Name == dn {
-				found = true
-				log.Info("FOUND: ", found)
-				device = d
-				if idx == 0 {
-					deviceIDA = didx
-				} else {
-					deviceIDB = didx
+				found0 = true
+				log.Info("FOUND0: ", found0)
+				if i == 0 {
+					device = d
 				}
+				deviceIDA = didx
 				break
 			}
-			log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+			log.Info("FOUND0: ", found0, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+
 		}
-		//log.Info("FOUND:", found)
-		if found == false {
-			device.init(deviceName, t, config, deviceID)
-			if idx == 0 {
-				deviceIDA = deviceID
-			} else {
-				deviceIDB = deviceID
+
+		if found0 == false {
+			if i == 0 {
+				device.init(deviceName0, t, config, deviceID)
+				devices = append(devices, device)
 			}
+			deviceIDA = deviceID
 			deviceID++
-			if deviceIDA == deviceIDB {
-				deviceIDB = deviceID
-			}
 			//log.Info("parseEndpoints Device init:", device)
-			log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+			log.Info("FOUND0: ", found0, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+		}
+
+		found1 := false
+		//log.Info("parseEndpoints Devices before for loop with found :", devices)
+		for didx, d := range devices {
+			//log.Info("parseEndpoints Device in for loop", d)
+			dn := config.Prefix + "-" + deviceName0
+			log.Info("dn: ", dn, " d.Name:  ", d.Name)
+			if d.Name == dn {
+				found0 = true
+				log.Info("FOUND1: ", found1)
+				if i == 1 {
+					device = d
+				}
+				deviceIDB = didx
+				break
+			}
+			log.Info("FOUND1: ", found1, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+		}
+
+		if found1 == false {
+			if i == 1 {
+				device.init(deviceName1, t, config, deviceID)
+				devices = append(devices, device)
+			}
+			deviceIDB = deviceID
+			deviceID++
+			//log.Info("parseEndpoints Device init:", device)
+			log.Info("FOUND1: ", found1, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
 		}
 
 		log.Info("deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
-		log.Info("Device Link Connection: ", deviceName, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
-		device.connect(intName, link, idx, deviceIDA, deviceIDB)
-		//log.Info("parseEndpoints Device connect:", device)
 
-		if found == false {
-			devices = append(devices, device)
+		if i == 0 {
+			log.Info("Device Link Connection: ", deviceName0, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
+			device.connect(intName0, link, i, deviceIDA, deviceIDB)
+			//log.Info("parseEndpoints Device connect:", device)
 		}
 
-		//log.Info("parseEndpoints Devices :", devices)
+		if i == 1 {
+			log.Info("Device Link Connection: ", deviceName1, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
+			device.connect(intName1, link, i, deviceIDA, deviceIDB)
+			//log.Info("parseEndpoints Device connect:", device)
+		}
+
 	}
+
+	//log.Info("parseEndpoints Devices :", devices)
+
+	/*
+		for idx, endpoint := range endpoints {
+			log.Info("Parsing Endpoints:  ", endpoint)
+			ep := strings.Split(endpoint, ":")
+			log.Info("EP:  ", ep)
+			deviceName := ep[0]
+			log.Info("DEVICE NAME:  ", deviceName)
+			intName := ep[1]
+			log.Info("INTERFACE NAME:  ", intName)
+
+			found := false
+			//log.Info("parseEndpoints Devices before for loop with found :", devices)
+			for didx, d := range devices {
+				//log.Info("parseEndpoints Device in for loop", d)
+				dn := config.Prefix + "-" + deviceName
+				log.Info("dn: ", dn, " d.Name:  ", d.Name)
+				if d.Name == dn {
+					found = true
+					log.Info("FOUND: ", found)
+					device = d
+					if idx == 0 {
+						deviceIDA = didx
+					} else {
+						deviceIDB = didx
+					}
+					break
+				}
+				log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+			}
+			//log.Info("FOUND:", found)
+			if found == false {
+				device.init(deviceName, t, config, deviceID)
+				if idx == 0 {
+					deviceIDA = deviceID
+				} else {
+					deviceIDB = deviceID
+				}
+				deviceID++
+				if deviceIDA == deviceIDB {
+					deviceIDB = deviceID
+				}
+				//log.Info("parseEndpoints Device init:", device)
+				log.Info("FOUND: ", found, " deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+			}
+
+			log.Info("deviceID:  ", deviceID, " deviceIDA: ", deviceIDA, " deviceIDB: ", deviceIDB)
+			log.Info("Device Link Connection: ", deviceName, " Link: ", link, " Device A: ", deviceIDA, " Device B: ", deviceIDB)
+			device.connect(intName, link, idx, deviceIDA, deviceIDB)
+			//log.Info("parseEndpoints Device connect:", device)
+
+			if found0 == false {
+				devices = append(devices, device)
+			}
+
+			//log.Info("parseEndpoints Devices :", devices)
+		}
+	*/
 }
 
 func parseTopology(t string, config topologyConfig) {
