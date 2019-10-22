@@ -264,7 +264,8 @@ func (d *device) connect(intName string, l link, idx, deviceIDA, deviceIDB int) 
 	d.InterfacesIdx[intName] = idx
 	//log.Info("Interfaces:", d.Interfaces)
 
-	d.updateStartMode(intName, l)
+	//d.updateStartMode(intName, l)
+	d.StartMode = "manual"
 }
 
 func (d *device) attach() {
@@ -282,12 +283,13 @@ func (d *device) updateStartMode(intName string, link link) {
 	} else {
 		newStartMode = "auto"
 	}
-	log.Info("Updating start_mode from to ", d.StartMode, newStartMode)
+	log.Info("Updating start_mode from ", d.StartMode, " to ", newStartMode)
 	d.StartMode = newStartMode
 
 }
 
 func (d *device) getOrCreate(o string) {
+	log.Info("Function Device getOrCreate")
 	log.Info("Obtaining a pointer to container: ", d.Name)
 	d.Container, d.ContainerStatus = d.get(o)
 	log.Info("Container info after get procedure:", d.Container)
@@ -300,7 +302,7 @@ func (d *device) getOrCreate(o string) {
 }
 
 func (d *device) get(o string) (string, string) {
-	log.Info("Get device")
+	log.Info("Function Device get")
 	log.Info("Container Name:", d.Name)
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -678,7 +680,7 @@ func (l *link) connect(d *device, IntIdx int, IntName string) {
 			}
 			log.Info("combined out: \n", string(out))
 
-			log.Info("Attaching veth pair to container with pid: ", l.Network.sideA, d.Pid)
+			log.Info("Attaching veth pair to container: ", l.Network.sideA, " with pid: ", d.Pid)
 			cmd = exec.Command("ip", "link", "set", l.Network.sideA, "netns", d.Pid)
 			out, err = cmd.CombinedOutput()
 			if err != nil {
