@@ -2,7 +2,7 @@ version: 2
 driver: 'veth'
 prefix: 'LS'
 nodetype: 'srlinux'
-image: 'srlinux:v0.7.0-83'
+image: 'srlinux:v0.8.0-74'
 base: 9000
 
 links:
